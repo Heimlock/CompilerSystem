@@ -35,7 +35,7 @@ public class UserInput_Impl implements UserInput {
    * @see data.interfaces.UserInput#add(int)
    */
   @Override
-  public void add(int value) {
+  public synchronized void add(int value) {
     this.userInputValues.add(value);
   }
 
@@ -44,7 +44,7 @@ public class UserInput_Impl implements UserInput {
    * @see data.interfaces.UserInput#getNextValue()
    */
   @Override
-  public int getNextValue() {
+  public synchronized int getNextValue() {
     Integer result = null;
     if (this.userInputValues.size() > this.readCounter) {
       result = this.userInputValues.get(this.readCounter++);
@@ -58,7 +58,7 @@ public class UserInput_Impl implements UserInput {
    * @see data.interfaces.UserInput#getCounter()
    */
   @Override
-  public int getCounter() {
+  public synchronized int getCounter() {
     return this.readCounter;
   }
 
@@ -66,18 +66,18 @@ public class UserInput_Impl implements UserInput {
    * @see data.interfaces.UserInput#getAll()
    */
   @Override
-  public List<Integer> getAll() {
+  public synchronized List<Integer> getAll() {
     return Collections.unmodifiableList(userInputValues);
   }
 
 
   @Override
-  public void changeValue(int oldIndex, int newValue) {
+  public synchronized void changeValue(int oldIndex, int newValue) {
     userInputValues.set(oldIndex, newValue);
   }
 
   @Override
-  public void remove(int index) {
+  public synchronized void remove(int index) {
     userInputValues.remove(index);
   }
 
@@ -87,7 +87,7 @@ public class UserInput_Impl implements UserInput {
    * @see data.interfaces.UserInput#reset()
    */
   @Override
-  public void reset() {
+  public synchronized void reset() {
     readCounter = 0;
   }
 

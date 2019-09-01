@@ -26,32 +26,32 @@ public class ProgramStack_Impl implements ProgramStack {
   }
 
   @Override
-  public int getCounter() {
+  public synchronized int getCounter() {
     return programCounter;
   }
 
   @Override
-  public List<String> getInstructions() {
+  public synchronized List<String> getInstructions() {
     return Collections.unmodifiableList(stack);
   }
 
   @Override
-  public void setCounter(int value) {
+  public synchronized void setCounter(int value) {
     this.programCounter = value;
   }
 
   @Override
-  public String getInstruction(int index) {
+  public synchronized String getInstruction(int index) {
     return this.stack.get(index);
   }
 
   @Override
-  public String nextInstruction() {
+  public synchronized String nextInstruction() {
     return this.stack.get(programCounter++);
   }
 
   @Override
-  public void putData(int index, String value) {
+  public synchronized void putData(int index, String value) {
     try {
       this.stack.set(index, value);
     } catch (IndexOutOfBoundsException e) {
@@ -60,12 +60,12 @@ public class ProgramStack_Impl implements ProgramStack {
   }
 
   @Override
-  public void push(String value) {
+  public synchronized void push(String value) {
     this.stack.add(value);
   }
 
   @Override
-  public int getLabel(String label) {
+  public synchronized int getLabel(String label) {
     Integer row = null;
     Operations operation;
     String instruction;

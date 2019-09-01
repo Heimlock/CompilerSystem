@@ -24,22 +24,22 @@ public class MemoryStack_Impl implements MemoryStack {
   }
 
   @Override
-  public int getCounter() {
+  public synchronized int getCounter() {
     return memoryCounter;
   }
 
   @Override
-  public void setCounter(int value) {
+  public synchronized void setCounter(int value) {
     this.memoryCounter = value;
   }
 
   @Override
-  public int getData(int index) {
+  public synchronized int getData(int index) {
     return this.stack.get(index);
   }
 
   @Override
-  public void putData(int index, int value) {
+  public synchronized void putData(int index, int value) {
     try {
       this.stack.set(index, value);
     } catch (IndexOutOfBoundsException e) {
@@ -48,13 +48,13 @@ public class MemoryStack_Impl implements MemoryStack {
   }
 
   @Override
-  public void push(int data) {
+  public synchronized void push(int data) {
     this.stack.add(data);
     this.memoryCounter++;
   }
 
   @Override
-  public int pop() {
+  public synchronized int pop() {
     Integer result = null;
     if (this.memoryCounter > 0 && this.memoryCounter <= this.stack.size()) {
       result = this.stack.remove(--this.memoryCounter);
@@ -65,7 +65,7 @@ public class MemoryStack_Impl implements MemoryStack {
   }
 
   @Override
-  public List<Integer> getAll() {
+  public synchronized List<Integer> getAll() {
     return Collections.unmodifiableList(stack);
   }
 
@@ -74,7 +74,7 @@ public class MemoryStack_Impl implements MemoryStack {
    * @see data.interfaces.MemoryStack#reset()
    */
   @Override
-  public void reset() {
+  public synchronized void reset() {
     memoryCounter = 0;
     stack.clear();
   }

@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import core.viewer.panels.BreakPointsPanelView;
+import core.viewer.panels.ControlPanelView;
 import core.viewer.panels.InputPanelView;
 import core.viewer.panels.MemoryStackView;
 import core.viewer.panels.MenuBar;
@@ -36,7 +37,7 @@ public class Viewer extends JFrame {
   private RefreshableView inputPanel;
   private RefreshableView outputPanel;
   private RefreshableView breakPointsPanel;
-  private JPanel controlPanel; //  TODO Implementrar Control Panel
+  private RefreshableView controlPanel;
 
   public Viewer() {
     setJMenuBar(menuBar);
@@ -50,6 +51,7 @@ public class Viewer extends JFrame {
     inputPanel.refresh();
     outputPanel.refresh();
     breakPointsPanel.refresh();
+    controlPanel.refresh();
   }
 
   private void initComponents() {
@@ -118,7 +120,7 @@ public class Viewer extends JFrame {
     gbc_breakPointsPanel.gridy = 3;
     contentPane.add(breakPointsPanel, gbc_breakPointsPanel);
 
-    controlPanel = new JPanel();
+    controlPanel = new ControlPanelView();
     GridBagConstraints gbc_controlPanel = new GridBagConstraints();
     gbc_controlPanel.insets = new Insets(0, 0, 5, 5);
     gbc_controlPanel.gridheight = 3;

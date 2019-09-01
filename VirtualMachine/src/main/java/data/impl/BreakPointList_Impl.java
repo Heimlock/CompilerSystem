@@ -36,7 +36,7 @@ public class BreakPointList_Impl implements BreakPointList {
    * @see data.interfaces.BreakPointList#addBreak(int)
    */
   @Override
-  public void addBreak(int line) {
+  public synchronized void addBreak(int line) {
     if (hasBreak(line)) {
       //  TODO -- Throw Error
     } else {
@@ -48,7 +48,7 @@ public class BreakPointList_Impl implements BreakPointList {
    * @see data.interfaces.BreakPointList#removeBreak(int)
    */
   @Override
-  public void removeBreak(int line) {
+  public synchronized void removeBreak(int line) {
     if (hasBreak(line)) {
       this.breakpoints.remove(line); //  TODO -- Verify if it works
     } else {
@@ -60,7 +60,7 @@ public class BreakPointList_Impl implements BreakPointList {
    * @see data.interfaces.BreakPointList#hasBreak(int)
    */
   @Override
-  public Boolean hasBreak(int line) {
+  public synchronized Boolean hasBreak(int line) {
     return breakpoints.contains(line) && !this.skipAll;
   }
 
@@ -68,17 +68,17 @@ public class BreakPointList_Impl implements BreakPointList {
    * @see data.interfaces.BreakPointList#getAll()
    */
   @Override
-  public List<Integer> getAll() {
+  public synchronized List<Integer> getAll() {
     return breakpoints.stream().collect(Collectors.toList());
   }
 
   @Override
-  public void setSkipAll(Boolean state) {
+  public synchronized void setSkipAll(Boolean state) {
     this.skipAll = state;
   }
 
   @Override
-  public void toggleBreak(int line) {
+  public synchronized void toggleBreak(int line) {
     if (hasBreak(line)) {
       removeBreak(line);
     } else {

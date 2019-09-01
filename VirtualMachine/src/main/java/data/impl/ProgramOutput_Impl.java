@@ -32,17 +32,17 @@ public class ProgramOutput_Impl implements ProgramOutput {
   }
 
   @Override
-  public void push(int value) {
+  public synchronized void push(int value) {
     outputData.add(value);
   }
 
   @Override
-  public List<Integer> getAll() {
+  public synchronized List<Integer> getAll() {
     return Collections.unmodifiableList(outputData);
   }
 
   @Override
-  public void reset() {
+  public synchronized void reset() {
     outputData.clear();
   }
 

@@ -36,6 +36,12 @@ public class MenuBar extends JMenuBar {
   private JMenuItem updateDebugAction;
 
   public MenuBar() {
+    initComponents();
+    initMnemonics();
+    initListeners();
+  }
+
+  private void initComponents() {
     fileMenu = new JMenu("Arquivos");
     execMenu = new JMenu("Executar");
     breakPointMenu = new JMenu("BreakPoints");
@@ -49,7 +55,9 @@ public class MenuBar extends JMenuBar {
     resumeAction = new JMenuItem("Resume");
     stepBreakAction = new JMenuItem("Step");
     skipAllBreakAction = new JMenuItem("Skip All");
+  }
 
+  private void initMnemonics() {
     //	Mnemônicas
     fileMenu.setMnemonic(KeyEvent.VK_T);
     execMenu.setMnemonic(KeyEvent.VK_O);
@@ -89,11 +97,9 @@ public class MenuBar extends JMenuBar {
     add(debugMenu);
     debugMenu.add(updateDebugAction);
     //  Debug --  End
-
-    initActionListeners();
   }
 
-  private void initActionListeners() {
+  private void initListeners() {
     VirtualMachineEngine vmEngine = VirtualMachineEngine.getInstance();
 
     openFileAction.addActionListener(evt -> {

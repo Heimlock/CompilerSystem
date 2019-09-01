@@ -40,6 +40,7 @@ public class VirtualMachineEngine {
 
   private Boolean running; //  Controls BreakPoints
   private Boolean ignoreBreaks; //  Controls BreakPoints
+  private long sleepTime;
 
   private Viewer viewerInstance;
 
@@ -61,9 +62,10 @@ public class VirtualMachineEngine {
     //  Flags
     this.running = Boolean.FALSE;
     this.ignoreBreaks = Boolean.FALSE;
+    this.sleepTime = 500;
   }
 
-  public void doCycle() {
+  public synchronized void doCycle() {
     String instruction = programStack.nextInstruction();
     Operations operation = InterpreterUtils.getOperation(instruction);
 
@@ -83,46 +85,54 @@ public class VirtualMachineEngine {
     viewerInstance.refresh();
   }
 
-  public Boolean isRunning() {
+  public synchronized Boolean isRunning() {
     return this.running;
   }
 
-  public void setRunning(Boolean state) {
+  public synchronized void setRunning(Boolean state) {
     this.running = state;
   }
 
-  public void toggleBreak() {
+  public synchronized void toggleBreak() {
     this.ignoreBreaks = !this.ignoreBreaks;
   }
 
-  public boolean getIgnoreBreaks() {
+  public synchronized boolean getIgnoreBreaks() {
     return this.ignoreBreaks;
   }
 
-  public void setViewerInstance(Viewer viewer) {
+  public synchronized void setViewerInstance(Viewer viewer) {
     this.viewerInstance = viewer;
   }
 
-  public void updateViewer() {
+  public synchronized void updateViewer() {
     this.viewerInstance.refresh();
   }
 
-  public void reset() {
+  public synchronized void reset() {
     this.memoryStack.reset();
     this.programStack.setCounter(0);
     //    this.userInput.reset();
     this.programOutput.reset();
   }
 
-  public JFrame getViewer() {
+  public synchronized JFrame getViewer() {
     return viewerInstance;
   }
 
-  public void stub() {
+  public synchronized void setSleep(long sleepTime) {
+    this.sleepTime = sleepTime;
+  }
+
+  public synchronized long getSleep() {
+    return sleepTime;
+  }
+
+  public synchronized void stub() {
     try {
       FileInterpreter file = new FileInterpreter("./assets/testeAssembly.obj");
       file.parseOperations();
-      setRunning(Boolean.TRUE);
+      //      setRunning(Boolean.TRUE);
 
       userInput.add(8);
       //      for (int i = 0; i < 10; i++) {

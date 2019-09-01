@@ -5,6 +5,7 @@ package core;
 
 import core.engine.VirtualMachineEngine;
 import core.viewer.Viewer;
+import utils.ThreadManager;
 
 /**
  * Copyright (c) 2019
@@ -15,8 +16,8 @@ import core.viewer.Viewer;
  */
 public class VirtualMachine {
   public static void main(String[] args) {
-    Viewer viewerInstance = new Viewer();
     VirtualMachineEngine vmEngine = VirtualMachineEngine.getInstance();
+    Viewer viewerInstance = new Viewer();
 
     //  Virtual Machine Setup
     vmEngine.setViewerInstance(viewerInstance);
@@ -24,10 +25,25 @@ public class VirtualMachine {
     //    vmEngine.stub();
 
     //  Main Loop
-    while (Boolean.TRUE) {
-      if (vmEngine.isRunning()) {
-        vmEngine.doCycle();
+    Thread mainThread = ThreadManager.createThread("Main Loop", () -> {
+      System.out.println("Thread Running");
+      try {
+        while (Boolean.TRUE) {
+          if (vmEngine.isRunning()) {
+            vmEngine.doCycle();
+        }
+          Thread.sleep(vmEngine.getSleep());
       }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    });
+    try {
+      mainThread.start();
+      mainThread.join();
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 }
