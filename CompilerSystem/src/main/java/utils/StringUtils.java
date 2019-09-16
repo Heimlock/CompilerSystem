@@ -45,4 +45,28 @@ public abstract class StringUtils {
     }
     return true;
   }
+
+  public static boolean isAritmeticOperator(char c) {
+    boolean result = Boolean.FALSE;
+    if (c == '+' || c == '-' || c == '*') {
+      result = Boolean.TRUE;
+    }
+    return result;
+  }
+
+  public static boolean isRelationalOperator(char c) {
+    boolean result = Boolean.FALSE;
+    if (c == '>' || c == '<' || c == '=' || c == '!') {
+      result = Boolean.TRUE;
+    }
+    return result;
+  }
+
+  public static boolean isPunctuation(char c) {
+    boolean result = Boolean.FALSE;
+    if (c == ';' || c == ',' || c == '(' || c == ')' || c == '.') {
+      result = Boolean.TRUE;
+    }
+    return result;
+  }
 }

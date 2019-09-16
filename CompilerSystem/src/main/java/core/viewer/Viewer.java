@@ -57,7 +57,7 @@ public class Viewer extends JFrame {
   private void initComponents() {
     try {
       String icon = "./assets/icon.png"; //  TODO -- Unify Data Resource Strings
-      ImageIcon img = new ImageIcon(icon);
+      ImageIcon img = new ImageIcon(this.getClass().getResource(icon));
       this.setIconImage(img.getImage());
     } catch (NullPointerException e) {
       e.printStackTrace();
