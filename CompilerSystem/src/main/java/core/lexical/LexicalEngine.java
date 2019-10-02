@@ -3,13 +3,12 @@
  */
 package core.lexical;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import core.lexical.file.FileInterpreter;
 import core.lexical.parser.LexicalParser;
 import data.impl.TokenStack_Impl;
+import data.interfaces.Token;
 import data.interfaces.TokenStack;
 
 /**
@@ -27,16 +26,21 @@ public class LexicalEngine {
       List<String> parsedProgram = interpreter.parseProgram();
       LexicalParser parser = LexicalParser.getInstance();
       TokenStack tokenStack = TokenStack_Impl.getInstance();
+      Token tokenRead;
 
       parser.setProgram(parsedProgram);
-      tokenStack.addTokens(parser.getTokens());
+      do {
+        tokenRead = parser.getNextToken();
+        if (tokenRead != null) {
+          tokenStack.addToken(tokenRead);
+        } else {
+          System.out.println("Null Token");
+        }
+      } while (parser.getRemainingLines() != 0);
       tokenStack.getTokens().forEach(token -> {
-        System.out.println(String.format("Lexeme: %s -- Symbol: %s", token.getLexeme(), token.getSymbol().name()));
+        System.out.println(token.toString());
       });
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

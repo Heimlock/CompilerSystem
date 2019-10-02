@@ -67,4 +67,9 @@ public class Token_Impl implements Token {
     return this.lineOffset;
   }
 
+  @Override
+  public String toString() {
+    return String.format("Token_Impl [lexeme='%s', symbol='%s', lineIndex=%d, lineOffset=%d]", lexeme, symbol.toString(), lineIndex, lineOffset);
+  }
+
 }

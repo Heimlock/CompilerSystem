@@ -3,6 +3,10 @@
  */
 package core.lexical.parser;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
+import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,17 +49,74 @@ public class LexicalParser {
     this.parsedProgram = parsedProgram;
   }
 
-  private char readChar() {
-    char result;
-    while (lineArray == null || lineOffset == lineArray.length || lineArray.length == 0) {
-      lineOffset = 0;
-      lineIndex++;
-      lineArray = parsedProgram.remove(0).toLowerCase().toCharArray();
-      Log.log(Level.INFO, String.format("At Line #%d", lineIndex));
+  public Integer getRemainingLines() {
+    return this.parsedProgram.size();
+  }
+
+  public List<Token> getTokens() throws EOFException {
+    final List<Token> result = new ArrayList<>();
+    Token token = null;
+    char charRead;
+
+    try {
+      do {
+        charRead = readChar(FALSE);
+        //  Deal with Comments
+        if (charRead == '{') {
+          do {
+            charRead = readChar(TRUE);
+          } while (charRead != '}');
+          charRead = readChar(FALSE);
+        }
+        token = getToken(charRead);
+        result.add(token);
+      } while (parsedProgram.size() > 0);
+    } catch (LexicalParserException e) {
+      e.printStackTrace();
     }
+    return result;
+  }
+
+  public Token getNextToken() throws EOFException, LexicalParserException {
+    Token token = null;
+    char charRead;
+    try {
+      if (this.parsedProgram.size() == 0) {
+        throw new EOFException("End of Source Program");
+      } else {
+        charRead = readChar(FALSE);
+        do {
+          //  Deal with Comments
+          if (charRead == '{') {
+            do {
+              charRead = readChar(TRUE);
+            } while (charRead != '}');
+            charRead = readChar(FALSE);
+          }
+        } while (charRead == '{');
+        token = getToken(charRead);
+      }
+    } catch (EOFException e) {
+      e.printStackTrace();
+    }
+    return token;
+  }
+
+  private char readChar(Boolean allowWhiteSpace) throws EOFException {
+    char result;
     do {
+      while (lineArray == null || lineOffset == lineArray.length || lineArray.length == 0) {
+        lineOffset = 0;
+        lineIndex++;
+        if (parsedProgram.size() == 0) {
+          throw new EOFException("End of Source Program -- Read Char");
+        } else {
+          lineArray = parsedProgram.remove(0).toLowerCase().toCharArray();
+          Log.log(Level.INFO, String.format("At Line #%d", lineIndex));
+        }
+      }
       result = lineArray[lineOffset++];
-    } while (result == ' ');
+    } while (result == ' ' && !allowWhiteSpace);
     return result;
   }
 
@@ -67,32 +128,7 @@ public class LexicalParser {
     return lineArray[nextCharOffset];
   }
 
-  public List<Token> getTokens() {
-    final List<Token> result = new ArrayList<>();
-    Token token = null;
-    char charRead;
-
-    try {
-      do {
-        charRead = readChar();
-        //  Deal with Comments
-        if (charRead == '{') {
-          do {
-            charRead = readChar();
-          } while (charRead != '}');
-          charRead = readChar();
-        }
-        token = getToken(charRead);
-        result.add(token);
-      } while (parsedProgram.size() > 0);
-
-    } catch (LexicalParserException e) {
-      e.printStackTrace();
-    }
-    return result;
-  }
-
-  private Token getToken(char charRead) throws LexicalParserException {
+  private Token getToken(char charRead) throws LexicalParserException, EOFException {
     Token result = null;
     if (Character.isDigit(charRead)) {
       result = this.handleDigit(charRead);
@@ -112,13 +148,13 @@ public class LexicalParser {
     return result;
   }
 
-  private Token handleDigit(char charInput) {
+  private Token handleDigit(char charInput) throws EOFException {
     Token result = null;
     char charRead;
     String lexeme = String.valueOf(charInput);
 
     while (Character.isDigit(peekNextChar())) {
-      charRead = readChar();
+      charRead = readChar(FALSE);
       lexeme = String.format("%s%c", lexeme, charRead);
     }
 
@@ -128,14 +164,14 @@ public class LexicalParser {
     return result;
   }
 
-  private Token handleIdentificationOrCommand(char charInput) {
+  private Token handleIdentificationOrCommand(char charInput) throws EOFException {
     Token result = null;
     char charRead;
     SymbolTable symbol = null;
     String lexeme = String.valueOf(charInput);
 
-    while (Character.isLetter(peekNextChar()) || peekNextChar() == '_') {
-      charRead = readChar();
+    while (Character.isLetter(peekNextChar()) || Character.isDigit(peekNextChar()) || peekNextChar() == '_') {
+      charRead = readChar(FALSE);
       lexeme = String.format("%s%c", lexeme, charRead);
       if (SymbolTable.getSymbolByLexeme(lexeme) != null) {
         result = new Token_Impl(this.lineIndex, this.lineOffset);
@@ -154,14 +190,14 @@ public class LexicalParser {
     return result;
   }
 
-  private Token handleAttribution(char charInput) {
+  private Token handleAttribution(char charInput) throws EOFException {
     Token result = null;
     char charRead;
     String lexeme = String.valueOf(charInput);
 
     result = new Token_Impl(this.lineIndex, this.lineOffset);
     if (peekNextChar() == '=') {
-      charRead = readChar();
+      charRead = readChar(FALSE);
       lexeme = String.format("%s%c", lexeme, charRead);
       result.setSymbol(SymbolTable.sAtribuicao);
     } else {
@@ -187,45 +223,48 @@ public class LexicalParser {
     return result;
   }
 
-  private Token handleRelationalcOperator(char charInput) {
+  private Token handleRelationalcOperator(char charInput) throws LexicalParserException, EOFException {
     Token result = null;
     char charRead;
     String lexeme = String.valueOf(charInput);
 
-    if (charInput == '=') {
+    if (charInput == '!' && peekNextChar() == '=') {
+      charRead = readChar(TRUE);
+      lexeme = String.format("%s%c", lexeme, charRead);
       result = new Token_Impl(this.lineIndex, this.lineOffset);
       result.setLexeme(lexeme);
-      result.setSymbol(SymbolTable.sIg);
-    } else if (charInput == '!') {
-      charRead = readChar();
-      if (charRead == '!') {
+      result.setSymbol(SymbolTable.sDif);
+    } else if (charInput == '<') {
+      if (peekNextChar() == '=') {
+        charRead = readChar(TRUE);
         lexeme = String.format("%s%c", lexeme, charRead);
         result = new Token_Impl(this.lineIndex, this.lineOffset);
         result.setLexeme(lexeme);
-        result.setSymbol(SymbolTable.sDif);
-      } else if (charInput == '<') {
-        if (peekNextChar() == '=') {
-          lexeme = String.format("%s%c", lexeme, charRead);
-          result = new Token_Impl(this.lineIndex, this.lineOffset);
-          result.setLexeme(lexeme);
-          result.setSymbol(SymbolTable.sMenorIg);
-        } else {
-          result = new Token_Impl(this.lineIndex, this.lineOffset);
-          result.setLexeme(lexeme);
-          result.setSymbol(SymbolTable.sMenor);
-        }
-      } else if (charInput == '>') {
-        if (peekNextChar() == '=') {
-          lexeme = String.format("%s%c", lexeme, charRead);
-          result = new Token_Impl(this.lineIndex, this.lineOffset);
-          result.setLexeme(lexeme);
-          result.setSymbol(SymbolTable.sMaiorIg);
-        } else {
-          result = new Token_Impl(this.lineIndex, this.lineOffset);
-          result.setLexeme(lexeme);
-          result.setSymbol(SymbolTable.sMaior);
-        }
+        result.setSymbol(SymbolTable.sMenorIg);
+      } else {
+        result = new Token_Impl(this.lineIndex, this.lineOffset);
+        result.setLexeme(lexeme);
+        result.setSymbol(SymbolTable.sMenor);
       }
+    } else if (charInput == '>') {
+      if (peekNextChar() == '=') {
+        charRead = readChar(TRUE);
+        lexeme = String.format("%s%c", lexeme, charRead);
+        result = new Token_Impl(this.lineIndex, this.lineOffset);
+        result.setLexeme(lexeme);
+        result.setSymbol(SymbolTable.sMaiorIg);
+      } else {
+        result = new Token_Impl(this.lineIndex, this.lineOffset);
+        result.setLexeme(lexeme);
+        result.setSymbol(SymbolTable.sMaior);
+      }
+    } else if (charInput == '=') {
+      result = new Token_Impl(this.lineIndex, this.lineOffset);
+      result.setLexeme(lexeme);
+      result.setSymbol(SymbolTable.sIg);
+    } else {
+      charRead = readChar(TRUE);
+      throw new LexicalParserException(String.format("Unknown Token Exception -- Char Read: '%c', Line: %d, Offset: %d", charRead, lineIndex, lineOffset));
     }
     return result;
   }
