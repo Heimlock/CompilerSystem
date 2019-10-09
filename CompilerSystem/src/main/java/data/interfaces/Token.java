@@ -3,7 +3,7 @@
  */
 package data.interfaces;
 
-import data.SymbolTable;
+import data.TokenSymbolTable;
 
 /**
  * Copyright (c) 2019
@@ -21,7 +21,7 @@ public interface Token {
 
   public void setLexeme(String symbol);
 
-  public SymbolTable getSymbol();
+  public TokenSymbolTable getSymbol();
 
-  public void setSymbol(SymbolTable lexeme);
+  public void setSymbol(TokenSymbolTable lexeme);
 }

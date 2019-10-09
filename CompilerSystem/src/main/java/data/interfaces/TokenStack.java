@@ -24,4 +24,6 @@ public interface TokenStack {
   public List<Token> getTokens();
 
   public Integer getCounter();
+
+  public Integer getRemainingTokens();
 }

@@ -3,7 +3,7 @@
  */
 package data.impl;
 
-import data.SymbolTable;
+import data.TokenSymbolTable;
 import data.interfaces.Token;
 
 /**
@@ -18,7 +18,7 @@ public class Token_Impl implements Token {
   private Integer lineIndex;
   private Integer lineOffset;
   private String lexeme;
-  private SymbolTable symbol;
+  private TokenSymbolTable symbol;
 
   public Token_Impl(int lineIndex, int lineOffset) {
     this.lineIndex = lineIndex;
@@ -45,7 +45,7 @@ public class Token_Impl implements Token {
    * @see data.interfaces.Token#getLexeme()
    */
   @Override
-  public SymbolTable getSymbol() {
+  public TokenSymbolTable getSymbol() {
     return this.symbol;
   }
 
@@ -53,7 +53,7 @@ public class Token_Impl implements Token {
    * @see data.interfaces.Token#setLexeme(data.LexemeTable)
    */
   @Override
-  public void setSymbol(SymbolTable symbol) {
+  public void setSymbol(TokenSymbolTable symbol) {
     this.symbol = symbol;
   }
 

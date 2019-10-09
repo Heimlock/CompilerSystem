@@ -86,4 +86,9 @@ public class TokenStack_Impl implements TokenStack {
   public Integer getCounter() {
     return this.tokenCounter;
   }
+
+  @Override
+  public Integer getRemainingTokens() {
+    return this.tokenList.size() - this.tokenCounter;
+  }
 }

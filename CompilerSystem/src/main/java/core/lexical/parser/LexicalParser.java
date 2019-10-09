@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import data.SymbolTable;
+import data.TokenSymbolTable;
 import data.impl.Token_Impl;
 import data.interfaces.Token;
 import utils.StringUtils;
@@ -160,23 +160,23 @@ public class LexicalParser {
 
     result = new Token_Impl(this.lineIndex, this.lineOffset);
     result.setLexeme(lexeme);
-    result.setSymbol(SymbolTable.sNumero);
+    result.setSymbol(TokenSymbolTable.sNumero);
     return result;
   }
 
   private Token handleIdentificationOrCommand(char charInput) throws EOFException {
     Token result = null;
     char charRead;
-    SymbolTable symbol = null;
+    TokenSymbolTable symbol = null;
     String lexeme = String.valueOf(charInput);
 
     while (Character.isLetter(peekNextChar()) || Character.isDigit(peekNextChar()) || peekNextChar() == '_') {
       charRead = readChar(FALSE);
       lexeme = String.format("%s%c", lexeme, charRead);
-      if (SymbolTable.getSymbolByLexeme(lexeme) != null) {
+      if (TokenSymbolTable.getSymbolByLexeme(lexeme) != null) {
         result = new Token_Impl(this.lineIndex, this.lineOffset);
         result.setLexeme(lexeme);
-        symbol = SymbolTable.getSymbolByLexeme(lexeme);
+        symbol = TokenSymbolTable.getSymbolByLexeme(lexeme);
         result.setSymbol(symbol);
         break;
       }
@@ -184,7 +184,7 @@ public class LexicalParser {
     if (result == null) {
       result = new Token_Impl(this.lineIndex, this.lineOffset);
       result.setLexeme(lexeme);
-      symbol = SymbolTable.sIdentificador;
+      symbol = TokenSymbolTable.sIdentificador;
       result.setSymbol(symbol);
     }
     return result;
@@ -199,9 +199,9 @@ public class LexicalParser {
     if (peekNextChar() == '=') {
       charRead = readChar(FALSE);
       lexeme = String.format("%s%c", lexeme, charRead);
-      result.setSymbol(SymbolTable.sAtribuicao);
+      result.setSymbol(TokenSymbolTable.sAtribuicao);
     } else {
-      result.setSymbol(SymbolTable.sDoisPontos);
+      result.setSymbol(TokenSymbolTable.sDoisPontos);
     }
     result.setLexeme(lexeme);
     return result;
@@ -214,11 +214,11 @@ public class LexicalParser {
     result = new Token_Impl(this.lineIndex, this.lineOffset);
     result.setLexeme(lexeme);
     if (charInput == '+') {
-      result.setSymbol(SymbolTable.sMais);
+      result.setSymbol(TokenSymbolTable.sMais);
     } else if (charInput == '-') {
-      result.setSymbol(SymbolTable.sMenos);
+      result.setSymbol(TokenSymbolTable.sMenos);
     } else if (charInput == '*') {
-      result.setSymbol(SymbolTable.sMult);
+      result.setSymbol(TokenSymbolTable.sMult);
     }
     return result;
   }
@@ -233,18 +233,18 @@ public class LexicalParser {
       lexeme = String.format("%s%c", lexeme, charRead);
       result = new Token_Impl(this.lineIndex, this.lineOffset);
       result.setLexeme(lexeme);
-      result.setSymbol(SymbolTable.sDif);
+      result.setSymbol(TokenSymbolTable.sDif);
     } else if (charInput == '<') {
       if (peekNextChar() == '=') {
         charRead = readChar(TRUE);
         lexeme = String.format("%s%c", lexeme, charRead);
         result = new Token_Impl(this.lineIndex, this.lineOffset);
         result.setLexeme(lexeme);
-        result.setSymbol(SymbolTable.sMenorIg);
+        result.setSymbol(TokenSymbolTable.sMenorIg);
       } else {
         result = new Token_Impl(this.lineIndex, this.lineOffset);
         result.setLexeme(lexeme);
-        result.setSymbol(SymbolTable.sMenor);
+        result.setSymbol(TokenSymbolTable.sMenor);
       }
     } else if (charInput == '>') {
       if (peekNextChar() == '=') {
@@ -252,16 +252,16 @@ public class LexicalParser {
         lexeme = String.format("%s%c", lexeme, charRead);
         result = new Token_Impl(this.lineIndex, this.lineOffset);
         result.setLexeme(lexeme);
-        result.setSymbol(SymbolTable.sMaiorIg);
+        result.setSymbol(TokenSymbolTable.sMaiorIg);
       } else {
         result = new Token_Impl(this.lineIndex, this.lineOffset);
         result.setLexeme(lexeme);
-        result.setSymbol(SymbolTable.sMaior);
+        result.setSymbol(TokenSymbolTable.sMaior);
       }
     } else if (charInput == '=') {
       result = new Token_Impl(this.lineIndex, this.lineOffset);
       result.setLexeme(lexeme);
-      result.setSymbol(SymbolTable.sIg);
+      result.setSymbol(TokenSymbolTable.sIg);
     } else {
       charRead = readChar(TRUE);
       throw new LexicalParserException(String.format("Unknown Token Exception -- Char Read: '%c', Line: %d, Offset: %d", charRead, lineIndex, lineOffset));
@@ -276,15 +276,15 @@ public class LexicalParser {
     result = new Token_Impl(this.lineIndex, this.lineOffset);
     result.setLexeme(lexeme);
     if (charInput == ';') {
-      result.setSymbol(SymbolTable.sPonto_Virgula);
+      result.setSymbol(TokenSymbolTable.sPonto_Virgula);
     } else if (charInput == ',') {
-      result.setSymbol(SymbolTable.sVirgula);
+      result.setSymbol(TokenSymbolTable.sVirgula);
     } else if (charInput == '(') {
-      result.setSymbol(SymbolTable.sAbre_Parenteses);
+      result.setSymbol(TokenSymbolTable.sAbre_Parenteses);
     } else if (charInput == ')') {
-      result.setSymbol(SymbolTable.sFecha_Parenteses);
+      result.setSymbol(TokenSymbolTable.sFecha_Parenteses);
     } else if (charInput == '.') {
-      result.setSymbol(SymbolTable.sPonto);
+      result.setSymbol(TokenSymbolTable.sPonto);
     }
     return result;
   }

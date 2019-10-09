@@ -10,7 +10,7 @@ package data;
  * @version 1.0
  * @since 1.0
  */
-public enum SymbolTable {
+public enum TokenSymbolTable {
   sPrograma("programa"),
   sInicio("inicio"),
   sFim("fim"),
@@ -51,11 +51,11 @@ public enum SymbolTable {
   ;
   private String lexeme;
 
-  private SymbolTable() {
+  private TokenSymbolTable() {
     this.lexeme = "";
   }
 
-  private SymbolTable(String lexeme) {
+  private TokenSymbolTable(String lexeme) {
     this.lexeme = lexeme;
   }
 
@@ -63,9 +63,9 @@ public enum SymbolTable {
     return this.lexeme;
   }
 
-  public static SymbolTable getSymbolByLexeme(String lexeme) {
-    SymbolTable result = null;
-    for (SymbolTable symbol : SymbolTable.values()) {
+  public static TokenSymbolTable getSymbolByLexeme(String lexeme) {
+    TokenSymbolTable result = null;
+    for (TokenSymbolTable symbol : TokenSymbolTable.values()) {
       if (symbol.getLexeme().equals(lexeme)) {
         result = symbol;
         break;
