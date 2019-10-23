@@ -3,6 +3,8 @@
  */
 package data.interfaces;
 
+import java.util.List;
+
 /**
  * Copyright (c) 2019
  *
@@ -11,9 +13,20 @@ package data.interfaces;
  * @since 1.0
  */
 public interface SymbolTable {
-  public void addSymbol(String id, Token token);
+  public void addSymbol(Token token, Scope scope);
+
+  public void addSymbol(Token token, Scope scope, Type type);
+
+  public void addType(Token token);
 
   public Boolean hasSymbol(Token token);
 
+  public Boolean hasSymbol(Token token, Scope scope);
+
   public Symbol getSymbol(Token token);
+
+  public List<Symbol> getAll();
+
+  //  UnitTest Util
+  public void purgeList();
 }

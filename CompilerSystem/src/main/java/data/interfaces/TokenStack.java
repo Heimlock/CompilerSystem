@@ -21,6 +21,8 @@ public interface TokenStack {
 
   public Token nextToken();
 
+  public Token peekToken();
+
   public List<Token> getTokens();
 
   public Integer getCounter();

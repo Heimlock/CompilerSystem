@@ -5,16 +5,6 @@ package data.interfaces;
 
 import java.util.Optional;
 
-enum Scope {
-  Variable,
-  Procedure
-}
-
-enum Type {
-  Inteiro,
-  Booleano
-}
-
 /**
  * Copyright (c) 2019
  *
@@ -26,12 +16,16 @@ public interface Symbol {
 
   public String getLexeme();
 
-  public Optional<Scope> getScope();
+  public Token getToken();
+
+  public Scope getScope();
 
   public Optional<Type> getType();
 
-  public Integer getStackAddr();
+  public void setType(Type type);
 
-  public void setStackAddr(Integer stackAddr);
+  public Optional<Integer> getStackAddr();
+
+  public void setStackAddr(int stackAddr);
 
 }

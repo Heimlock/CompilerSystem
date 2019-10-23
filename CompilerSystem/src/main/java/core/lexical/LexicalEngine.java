@@ -19,7 +19,7 @@ import data.interfaces.TokenStack;
  * @since 1.0
  */
 public class LexicalEngine {
-  private static final String FILE_PATH = "./assets/testes/test1.lpd";
+  private static final String FILE_PATH = "./assets/testesLexico/test1.lpd";
   public static void main(String[] args) {
     try {
       FileInterpreter interpreter = new FileInterpreter(FILE_PATH);

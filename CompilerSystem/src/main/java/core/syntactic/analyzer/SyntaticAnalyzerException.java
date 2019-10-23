@@ -10,20 +10,20 @@ package core.syntactic.analyzer;
  * @version 1.0
  * @since 1.0
  */
-public class SyntacticAnalyzerException extends Exception {
+public class SyntaticAnalyzerException extends Exception {
   private static final long serialVersionUID = -3147739644658623882L;
 
   /**
    * @param message
    */
-  public SyntacticAnalyzerException(String message) {
+  public SyntaticAnalyzerException(String message) {
     super(message);
   }
 
   /**
    * @param cause
    */
-  public SyntacticAnalyzerException(Throwable cause) {
+  public SyntaticAnalyzerException(Throwable cause) {
     super(cause);
   }
 
@@ -31,7 +31,7 @@ public class SyntacticAnalyzerException extends Exception {
    * @param message
    * @param cause
    */
-  public SyntacticAnalyzerException(String message, Throwable cause) {
+  public SyntaticAnalyzerException(String message, Throwable cause) {
     super(message, cause);
   }
 
@@ -41,7 +41,7 @@ public class SyntacticAnalyzerException extends Exception {
    * @param enableSuppression
    * @param writableStackTrace
    */
-  public SyntacticAnalyzerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+  public SyntaticAnalyzerException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 

@@ -80,24 +80,20 @@ public class LexicalParser {
   public Token getNextToken() throws EOFException, LexicalParserException {
     Token token = null;
     char charRead;
-    try {
-      if (this.parsedProgram.size() == 0) {
-        throw new EOFException("End of Source Program");
-      } else {
-        charRead = readChar(FALSE);
-        do {
-          //  Deal with Comments
-          if (charRead == '{') {
-            do {
-              charRead = readChar(TRUE);
-            } while (charRead != '}');
-            charRead = readChar(FALSE);
-          }
-        } while (charRead == '{');
-        token = getToken(charRead);
-      }
-    } catch (EOFException e) {
-      e.printStackTrace();
+    if (this.parsedProgram.size() == 0) {
+      throw new EOFException("End of Source Program");
+    } else {
+      charRead = readChar(FALSE);
+      do {
+        //  Deal with Comments
+        if (charRead == '{') {
+          do {
+            charRead = readChar(TRUE);
+          } while (charRead != '}');
+          charRead = readChar(FALSE);
+        }
+      } while (charRead == '{');
+      token = getToken(charRead);
     }
     return token;
   }
@@ -128,18 +124,26 @@ public class LexicalParser {
     return lineArray[nextCharOffset];
   }
 
+  private boolean isEndOfLine() {
+    boolean result = false;
+    if (lineOffset == lineArray.length) {
+      result = true;
+    }
+    return result;
+  }
+
   private Token getToken(char charRead) throws LexicalParserException, EOFException {
     Token result = null;
     if (Character.isDigit(charRead)) {
       result = this.handleDigit(charRead);
+    } else if (StringUtils.isRelationalOperator(charRead)) {
+      result = handleRelationalOperator(charRead);
     } else if (Character.isLetter(charRead)) {
       result = this.handleIdentificationOrCommand(charRead);
     } else if (charRead == ':') {
       result = this.handleAttribution(charRead);
     } else if (StringUtils.isAritmeticOperator(charRead)) {
       result = handleArithmeticOperator(charRead);
-    } else if (StringUtils.isRelationalOperator(charRead)) {
-      result = handleRelationalcOperator(charRead);
     } else if (StringUtils.isPunctuation(charRead)) {
       result = handlePunctuation(charRead);
     } else {
@@ -167,24 +171,19 @@ public class LexicalParser {
   private Token handleIdentificationOrCommand(char charInput) throws EOFException {
     Token result = null;
     char charRead;
-    TokenSymbolTable symbol = null;
+    TokenSymbolTable symbol = TokenSymbolTable.sIdentificador;
     String lexeme = String.valueOf(charInput);
 
-    while (Character.isLetter(peekNextChar()) || Character.isDigit(peekNextChar()) || peekNextChar() == '_') {
+    while (!isEndOfLine() && (Character.isLetter(peekNextChar()) || Character.isDigit(peekNextChar()) || peekNextChar() == '_')) {
       charRead = readChar(FALSE);
       lexeme = String.format("%s%c", lexeme, charRead);
-      if (TokenSymbolTable.getSymbolByLexeme(lexeme) != null) {
-        result = new Token_Impl(this.lineIndex, this.lineOffset);
-        result.setLexeme(lexeme);
-        symbol = TokenSymbolTable.getSymbolByLexeme(lexeme);
-        result.setSymbol(symbol);
-        break;
-      }
+    }
+    if (TokenSymbolTable.getSymbolByLexeme(lexeme) != null) {
+      symbol = TokenSymbolTable.getSymbolByLexeme(lexeme);
     }
     if (result == null) {
       result = new Token_Impl(this.lineIndex, this.lineOffset);
       result.setLexeme(lexeme);
-      symbol = TokenSymbolTable.sIdentificador;
       result.setSymbol(symbol);
     }
     return result;
@@ -223,7 +222,7 @@ public class LexicalParser {
     return result;
   }
 
-  private Token handleRelationalcOperator(char charInput) throws LexicalParserException, EOFException {
+  private Token handleRelationalOperator(char charInput) throws LexicalParserException, EOFException {
     Token result = null;
     char charRead;
     String lexeme = String.valueOf(charInput);

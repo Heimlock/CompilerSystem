@@ -71,7 +71,17 @@ public class TokenStack_Impl implements TokenStack {
     return this.tokenList.get(tokenCounter++);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * @see data.interfaces.TokenStack#nextToken()
+   */
+  @Override
+  public Token peekToken() {
+    return this.tokenList.get(tokenCounter);
+  }
+
+  /*
+   * (non-Javadoc)
    * @see data.interfaces.TokenStack#getTokens()
    */
   @Override
