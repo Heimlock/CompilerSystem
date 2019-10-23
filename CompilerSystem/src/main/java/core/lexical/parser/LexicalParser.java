@@ -26,7 +26,7 @@ import utils.StringUtils;
  */
 public class LexicalParser {
   private static LexicalParser instance = null;
-  private Logger Log = Logger.getGlobal();
+  private Logger Log = Logger.getLogger("LexicalParser");
   private List<String> parsedProgram;
   private Integer lineIndex;
   private Integer lineOffset;
@@ -286,5 +286,13 @@ public class LexicalParser {
       result.setSymbol(TokenSymbolTable.sPonto);
     }
     return result;
+  }
+
+  //  Unit Test
+  public void purgeData() {
+    this.parsedProgram.clear();
+    this.lineIndex = 0;
+    this.lineOffset = 0;
+    this.lineArray = null;
   }
 }

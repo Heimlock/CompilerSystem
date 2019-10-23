@@ -3,16 +3,16 @@
  */
 package syntatic;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.EOFException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Test;
 
 import core.lexical.file.FileInterpreter;
 import core.lexical.parser.LexicalParser;
@@ -33,7 +33,7 @@ public class SyntaticAnalyserTest {
   private static SyntaticAnalyzer syntatic;
 
   private void setup(String filePath) {
-    Logger.getGlobal().setLevel(Level.OFF);
+    Logger.getLogger("LexicalParser").setLevel(Level.OFF);
     try {
       FileInterpreter interpreter = new FileInterpreter(filePath);
       List<String> parsedProgram = interpreter.parseProgram();
@@ -46,8 +46,8 @@ public class SyntaticAnalyserTest {
     }
   }
 
-  @AfterEach
-  private void dumpSymbolTable() {
+  @After
+  public void dumpSymbolTable() {
     System.out.println("========================================");
     System.out.println("||-----Topo da Tabela de Simbolos-----||");
     System.out.println("========================================");
@@ -55,15 +55,18 @@ public class SyntaticAnalyserTest {
       Symbol symbol =SymbolTable_Impl.getInstance().getAll().get(i); 
       System.out.println(String.format("[%d] - %s", i, symbol.toString()));
     }
-    System.out.println("========================================");
-
-    SymbolTable_Impl.getInstance().purgeList();
+    purgeData();
   }
 
-  @Test
+  private void purgeData() {
+    SymbolTable_Impl.getInstance().purgeList();
+    LexicalParser.getInstance().purgeData();
+  }
+
   /*
    * Ok
    */
+  @Test
   public void program01Test() {
     this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 1));
     try {
@@ -265,7 +268,7 @@ public class SyntaticAnalyserTest {
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleSubRotines]") && e.getMessage().endsWith(", Context: Ponto Virgula"));
+      assertTrue(e.getMessage().startsWith("[handleCommands]") && e.getMessage().endsWith(", Context: Inicio"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
