@@ -226,8 +226,10 @@ public class SyntaticAnalyzer {
   }
 
   private void handleAssignment() throws SyntaticAnalyzerException, EOFException, LexicalParserException {
+    //  TODO -- Verifica se eh var e se existe
     nextToken();
     handleExpression();
+    //  TODO -- Tipo Pos-Fixa == Tipo Var
   }
 
   private void handleIf() throws SyntaticAnalyzerException, EOFException, LexicalParserException {

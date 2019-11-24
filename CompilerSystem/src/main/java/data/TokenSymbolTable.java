@@ -3,6 +3,10 @@
  */
 package data;
 
+import java.util.Optional;
+
+import utils.StringUtils;
+
 /**
  * Copyright (c) 2019
  *
@@ -21,7 +25,7 @@ public enum TokenSymbolTable {
   sSenao("senao"),
   sEnquanto("enquanto"),
   sFaca("faca"),
-  sAtribuicao,
+  sAtribuicao(":="),
   sEscreva("escreva"),
   sLeia("leia"),
   sVar("var"),
@@ -29,34 +33,47 @@ public enum TokenSymbolTable {
   sBooleano("booleano"),
   sIdentificador,
   sNumero,
-  sPonto,
-  sPonto_Virgula,
-  sVirgula,
-  sAbre_Parenteses,
-  sFecha_Parenteses,
-  sMaior,
-  sMaiorIg,
-  sIg,
-  sMenor,
-  sMenorIg,
-  sDif,
-  sMais,
-  sMenos,
-  sMult,
-  sDiv("div"),
-  sE("e"),
-  sOu("ou"),
-  sNao("nao"),
-  sDoisPontos
+  sPonto("."),
+  sPonto_Virgula(";"),
+  sVirgula(","),
+  sAbre_Parenteses("("),
+  sFecha_Parenteses(")"),
+  sMaior(">", 3),
+  sMaiorIg(">=", 3),
+  sIg("=", 3),
+  sMenor("<", 3),
+  sMenorIg("<=", 3),
+  sDif("!=", 3),
+  sMais("+", 4),
+  sMenos("-", 4),
+  sMult("*", 5),
+  sDiv("div", 5),
+  sE("e", 2),
+  sOu("ou", 1),
+  sNao("nao", 6),
+  sDoisPontos(":"),
   ;
   private String lexeme;
+  private Integer precedency;
 
   private TokenSymbolTable() {
     this.lexeme = "";
+    this.precedency = -1;
+  }
+
+  private TokenSymbolTable(Integer precedency) {
+    this.lexeme = "";
+    this.precedency = precedency;
   }
 
   private TokenSymbolTable(String lexeme) {
     this.lexeme = lexeme;
+    this.precedency = -1;
+  }
+
+  private TokenSymbolTable(String lexeme, Integer precedency) {
+    this.lexeme = lexeme;
+    this.precedency = precedency;
   }
 
   public String getLexeme() {
@@ -71,6 +88,17 @@ public enum TokenSymbolTable {
         break;
       }
     }
+    if (!Optional.ofNullable(result).isPresent()) {
+      if (StringUtils.isNumeric(lexeme)) {
+        result = sNumero;
+      } else {
+        result = sIdentificador;
+      }
+    }
     return result;
+  }
+
+  public Integer getPrecedency() {
+    return precedency;
   }
 }

@@ -5,6 +5,8 @@ package data.interfaces;
 
 import java.util.List;
 
+import core.generator.CodeGeneratorException;
+
 /**
  * Copyright (c) 2019
  *
@@ -15,5 +17,5 @@ import java.util.List;
 public interface GenerateCode {
   public void addToken(Token token);
 
-  public List<String> generate();
+  public List<String> generate() throws CodeGeneratorException;
 }

@@ -25,6 +25,8 @@ public interface SymbolTable {
 
   public Symbol getSymbol(Token token);
 
+  public Integer getMemoryLocation(Token token);
+
   public List<Symbol> getAll();
 
   //  UnitTest Util

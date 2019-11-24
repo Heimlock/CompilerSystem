@@ -89,4 +89,9 @@ public class SymbolTable_Impl implements SymbolTable {
   public void purgeList() {
     this.symbolStack.clear();
   }
+
+  @Override
+  public Integer getMemoryLocation(Token token) {
+    return -1; // FIXME
+  }
 }

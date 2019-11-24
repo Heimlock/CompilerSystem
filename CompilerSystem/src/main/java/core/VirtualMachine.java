@@ -4,7 +4,7 @@
 package core;
 
 import core.engine.VirtualMachineEngine;
-import core.viewer.Viewer;
+import core.viewer.ViewerVirtualMachine;
 import utils.ThreadManager;
 
 /**
@@ -17,7 +17,7 @@ import utils.ThreadManager;
 public class VirtualMachine {
   public static void main(String[] args) {
     VirtualMachineEngine vmEngine = VirtualMachineEngine.getInstance();
-    Viewer viewerInstance = new Viewer();
+    ViewerVirtualMachine viewerInstance = new ViewerVirtualMachine();
 
     //  Virtual Machine Setup
     vmEngine.setViewerInstance(viewerInstance);

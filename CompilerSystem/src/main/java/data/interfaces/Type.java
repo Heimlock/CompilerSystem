@@ -14,7 +14,7 @@ import java.util.Arrays;
  */
 public enum Type {
   Inteiro,
-  Booleano
+  Booleano,
   ;
 
   private Type() {

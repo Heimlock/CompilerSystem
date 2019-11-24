@@ -88,7 +88,7 @@ public class MenuBar extends JMenuBar {
 
     //  Debug --  Start
     debugMenu = new JMenu("Debug");
-    updateDebugAction = new JMenuItem("Update Viewer");
+    updateDebugAction = new JMenuItem("Update ViewerVirtualMachine");
     updateDebugAction.setAccelerator(KeyStroke.getKeyStroke('R', InputEvent.CTRL_DOWN_MASK));
     updateDebugAction.addActionListener(evt -> {
       Log.log(Level.INFO, "updateDebugAction");

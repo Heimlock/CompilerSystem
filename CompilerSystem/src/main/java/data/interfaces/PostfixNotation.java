@@ -3,6 +3,10 @@
  */
 package data.interfaces;
 
+import java.util.List;
+
+import core.generator.CodeGeneratorException;
+
 /**
  * Copyright (c) 2019
  *
@@ -12,5 +16,7 @@ package data.interfaces;
  */
 public interface PostfixNotation extends GenerateCode {
   //  Debug Function
-  public String convert();
+  public List<Token> convert() throws CodeGeneratorException;
+
+  public Type getType();
 }

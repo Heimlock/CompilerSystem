@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 
 import core.engine.file.FileInterpreter;
 import core.engine.operations.Operations;
-import core.viewer.Viewer;
+import core.viewer.ViewerVirtualMachine;
 import data.OperationType;
 import data.impl.BreakPointList_Impl;
 import data.impl.MemoryStack_Impl;
@@ -42,7 +42,7 @@ public class VirtualMachineEngine {
   private Boolean ignoreBreaks; //  Controls BreakPoints
   private long sleepTime;
 
-  private Viewer viewerInstance;
+  private ViewerVirtualMachine viewerInstance;
 
   public static VirtualMachineEngine getInstance() {
     if (instance == null) {
@@ -81,7 +81,7 @@ public class VirtualMachineEngine {
       setRunning(Boolean.FALSE);
     }
 
-    //  TODO Update Viewer
+    //  TODO Update ViewerVirtualMachine
     viewerInstance.refresh();
   }
 
@@ -101,8 +101,8 @@ public class VirtualMachineEngine {
     return this.ignoreBreaks;
   }
 
-  public synchronized void setViewerInstance(Viewer viewer) {
-    this.viewerInstance = viewer;
+  public synchronized void setViewerInstance(ViewerVirtualMachine viewerVirtualMachine) {
+    this.viewerInstance = viewerVirtualMachine;
   }
 
   public synchronized void updateViewer() {

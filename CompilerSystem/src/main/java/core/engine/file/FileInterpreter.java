@@ -14,7 +14,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import core.engine.VirtualMachineEngine;
-import core.viewer.Viewer;
+import core.viewer.ViewerVirtualMachine;
 import data.impl.ProgramStack_Impl;
 import data.interfaces.ProgramStack;
 
@@ -30,7 +30,7 @@ public class FileInterpreter {
   private ProgramStack program;
 
   public FileInterpreter() throws FileNotFoundException {
-    final Viewer mainFrame = (Viewer) VirtualMachineEngine.getInstance().getViewer();
+    final ViewerVirtualMachine mainFrame = (ViewerVirtualMachine) VirtualMachineEngine.getInstance().getViewer();
     JFileChooser fileChooser = new JFileChooser();
     FileFilter filter = new FileNameExtensionFilter("Assembly File", "obj");
     fileChooser.setFileFilter(filter);

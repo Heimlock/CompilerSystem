@@ -6,6 +6,7 @@ package core.generator;
 import core.generator.specific.AssignmentGenerator;
 import core.generator.specific.FunctionGenerator;
 import core.generator.specific.IfGenerator;
+import core.generator.specific.LoadGenerator;
 import core.generator.specific.ProcedureGenerator;
 import core.generator.specific.ReadGenerator;
 import core.generator.specific.SubRotineGenerator;
@@ -29,6 +30,7 @@ public enum GeneratorTypes {
   Read(new ReadGenerator()),
   Write(new WriteGenerator()),
   Assignment(new AssignmentGenerator()),
+  Load(new LoadGenerator()),
   ;
 
   private GenerateCode generator;
