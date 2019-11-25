@@ -260,4 +260,12 @@ public class PostfixNotation_Impl implements PostfixNotation {
     }
     return result;
   }
+
+  @Override
+  public void clear() {
+    tokenStack.clear();
+    resultType = null;
+    stack.clear();
+    resultList.clear();
+  }
 }

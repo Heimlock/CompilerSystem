@@ -25,6 +25,15 @@ public class Token_Impl implements Token {
     this.lineOffset = lineOffset;
   }
 
+  //  Used in Tests
+  @Deprecated
+  public Token_Impl(String lexeme) {
+    this.lineIndex = -1;
+    this.lineOffset = -2;
+    this.lexeme = lexeme;
+    this.symbol = TokenSymbolTable.getSymbolByLexeme(lexeme);
+  }
+
   /* (non-Javadoc)
    * @see data.interfaces.Token#getSymbol()
    */

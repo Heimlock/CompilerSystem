@@ -3,9 +3,14 @@
  */
 package core.generator.specific;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import core.engine.operations.Operations;
+import data.TokenSymbolTable;
+import data.impl.SymbolTable_Impl;
 import data.interfaces.GenerateCode;
+import data.interfaces.SymbolTable;
 import data.interfaces.Token;
 
 /**
@@ -16,17 +21,30 @@ import data.interfaces.Token;
  * @since 1.0
  */
 public class ReadGenerator implements GenerateCode {
+  private SymbolTable table = SymbolTable_Impl.getInstance();
+  private Token destVar;
 
   @Override
   public void addToken(Token token) {
-    // TODO Auto-generated method stub
+    if (token.getSymbol().equals(TokenSymbolTable.sIdentificador)) {
+      this.destVar = token;
+    }
+  }
 
+  /*
+   * leia ( <identificador> )
+   */
+  @Override
+  public List<String> generate() {
+    List<String> result = new ArrayList<>();
+    Integer memoryLocation = table.getMemoryLocation(destVar);
+    result.add(Operations.RD.name());
+    result.add(String.format("%s %d", Operations.STR.name(), memoryLocation));
+    return result;
   }
 
   @Override
-  public List<String> generate() {
-    // TODO Auto-generated method stub
-    return null;
+  public void clear() {
+    destVar = null;
   }
-
 }

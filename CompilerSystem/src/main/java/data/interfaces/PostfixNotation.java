@@ -19,4 +19,6 @@ public interface PostfixNotation extends GenerateCode {
   public List<Token> convert() throws CodeGeneratorException;
 
   public Type getType();
+
+  public void clear();
 }

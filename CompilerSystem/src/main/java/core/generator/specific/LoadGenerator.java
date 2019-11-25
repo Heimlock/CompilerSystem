@@ -51,8 +51,11 @@ public class LoadGenerator implements GenerateCode {
         throw new CodeGeneratorException(String.format("Unexpected Token. Token = %s", token.toString()));
       }
     }
-    tokenList.clear();
     return result;
   }
 
+  @Override
+  public void clear() {
+    tokenList.clear();
+  }
 }

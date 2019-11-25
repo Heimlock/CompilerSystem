@@ -22,15 +22,15 @@ import data.interfaces.GenerateCode;
  * @since 1.0
  */
 public enum GeneratorTypes {
-  If(new IfGenerator()),
+  If(new IfGenerator()), // Ok
   While(new WhileGenerator()),
   SubRotine(new SubRotineGenerator()),
   Procedure(new ProcedureGenerator()),
   Function(new FunctionGenerator()),
-  Read(new ReadGenerator()),
-  Write(new WriteGenerator()),
-  Assignment(new AssignmentGenerator()),
-  Load(new LoadGenerator()),
+  Read(new ReadGenerator()), //  Ok
+  Write(new WriteGenerator()), // Ok
+  Assignment(new AssignmentGenerator()), //  Ok
+  Load(new LoadGenerator()), //  Ok
   ;
 
   private GenerateCode generator;
@@ -44,6 +44,7 @@ public enum GeneratorTypes {
   }
 
   public GenerateCode getGenerator() {
+    this.generator.clear();
     return this.generator;
   }
 }
