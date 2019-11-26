@@ -38,7 +38,7 @@ public class IfGenerator implements GenerateCode {
   }
 
   @Override
-  public void addToken(Token token) {
+  public void addToken(Token token) throws CodeGeneratorException {
     postfix.addToken(token);
   }
 

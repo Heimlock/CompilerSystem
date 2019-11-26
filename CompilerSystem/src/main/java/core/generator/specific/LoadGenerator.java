@@ -42,7 +42,7 @@ public class LoadGenerator implements GenerateCode {
         break;
       case sVar:
         if (symbolTable.hasSymbol(token)) {
-          result.add(String.format("LDV %d", symbolTable.getMemoryLocation(token)));
+          result.add(String.format("LDV %d", symbolTable.getVarMemoryLocation(token)));
         } else {
 
         }

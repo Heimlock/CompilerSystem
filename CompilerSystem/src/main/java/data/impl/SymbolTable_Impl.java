@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import data.interfaces.Scope;
 import data.interfaces.Symbol;
@@ -91,7 +92,63 @@ public class SymbolTable_Impl implements SymbolTable {
   }
 
   @Override
-  public Integer getMemoryLocation(Token token) {
-    return -1; // FIXME
+  public Integer getVarMemoryLocation(Symbol symbol) {
+    return getVarMemoryLocation(symbol.getToken());
+  }
+
+  @Override
+  public Integer getVarMemoryLocation(Token token) {
+    Symbol var = getSymbol(token);
+    Symbol parent = var;
+
+    List<Symbol> variables;
+    List<Symbol> procedures = symbolStack.stream()//
+        .filter(s -> s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function))//
+        .collect(Collectors.toList());
+
+    Integer parentIndex = null;
+    Integer varIndex = null;
+
+    for (Symbol s : symbolStack.subList(0, symbolStack.indexOf(var))) {
+      if (s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function)) {
+        parent = s;
+      }
+    }
+    variables = getAllVariablesOf(parent.getToken());
+
+    parentIndex = procedures.indexOf(parent);
+    varIndex = variables.indexOf(var);
+    return parentIndex + varIndex;
+  }
+
+  @Override
+  public Integer getProcMemoryLocation(Symbol symbol) {
+    return getProcMemoryLocation(symbol.getToken());
+  }
+
+  @Override
+  public Integer getProcMemoryLocation(Token token) {
+    Symbol procSymbol = getSymbol(token);
+    List<Symbol> procedures = symbolStack.stream()//
+        .filter(s -> s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function))//
+        .collect(Collectors.toList());
+    Integer index = null;
+
+    index = procedures.indexOf(procSymbol);
+    return index;
+  }
+
+  @Override
+  public List<Symbol> getAllVariablesOf(Token token) {
+    List<Symbol> variables = new ArrayList<>();
+    Symbol varParent = getSymbol(token);
+    for (Symbol actual : symbolStack.subList(symbolStack.indexOf(varParent) + 1, symbolStack.size())) {
+      if (actual.getScope().equals(Scope.Variable)) {
+        variables.add(actual);
+      } else {
+        break;
+      }
+    }
+    return variables;
   }
 }

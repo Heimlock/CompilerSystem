@@ -52,4 +52,10 @@ public class JumpOperations {
     program.setCounter(a);
   }
 
+  protected static void returnF(int m, int n) {
+    int result = memory.pop();
+    Operations.DALLOC.compute(m, n);
+    returns();
+    memory.push(result);
+  }
 }

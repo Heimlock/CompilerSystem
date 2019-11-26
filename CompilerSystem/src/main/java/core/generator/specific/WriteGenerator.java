@@ -37,7 +37,7 @@ public class WriteGenerator implements GenerateCode {
   @Override
   public List<String> generate() {
     List<String> result = new ArrayList<>();
-    Integer memoryLocation = table.getMemoryLocation(srcVar);
+    Integer memoryLocation = table.getVarMemoryLocation(srcVar);
     result.add(String.format("%s %d", Operations.LDV.name(), memoryLocation));
     result.add(Operations.PRN.name());
     return result;

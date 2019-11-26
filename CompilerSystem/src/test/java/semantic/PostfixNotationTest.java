@@ -9,13 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import core.generator.CodeGeneratorException;
 import data.TokenSymbolTable;
 import data.impl.PostfixNotation_Impl;
+import data.impl.SymbolTable_Impl;
 import data.impl.Token_Impl;
 import data.interfaces.PostfixNotation;
+import data.interfaces.Scope;
+import data.interfaces.SymbolTable;
 import data.interfaces.Token;
 import data.interfaces.Type;
 
@@ -29,10 +33,12 @@ import data.interfaces.Type;
 public class PostfixNotationTest {
   private Boolean operationsDebug;
   private PostfixNotation postfix;
+  private SymbolTable table;
 
   @Before
   public void setup() {
     operationsDebug = false;
+    table = SymbolTable_Impl.getInstance();
   }
 
   /*
@@ -170,11 +176,24 @@ public class PostfixNotationTest {
     assertEquals("Should have Equal Result", "1 2 - 3 - ", postfix.toString());
   }
 
+  @Ignore
+  @Test
+  @SuppressWarnings("deprecation")
+  public void expression05Test() throws CodeGeneratorException {
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var2"), Scope.Variable, Type.Booleano);
+    postfix = getNotation(Arrays.asList("var1", "+", "var2"));
+    printGeneratedCode(postfix.generate());
+    printPostFix(postfix);
+    assertEquals("Should have Returned a Boolean Expression", Type.Inteiro, postfix.getType());
+    assertEquals("Should have Equal Result", "var1 var2 +", postfix.toString());
+  }
+
   /*
    * Auxiliary Functions
    */
 
-  private PostfixNotation getNotation(List<String> expression) {
+  private PostfixNotation getNotation(List<String> expression) throws CodeGeneratorException {
     PostfixNotation postfix = new PostfixNotation_Impl();
     Token token;
     String lexeme;

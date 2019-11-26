@@ -25,7 +25,15 @@ public interface SymbolTable {
 
   public Symbol getSymbol(Token token);
 
-  public Integer getMemoryLocation(Token token);
+  public Integer getVarMemoryLocation(Token token);
+
+  public Integer getVarMemoryLocation(Symbol symbol);
+
+  public Integer getProcMemoryLocation(Token token);
+
+  public Integer getProcMemoryLocation(Symbol symbol);
+
+  public List<Symbol> getAllVariablesOf(Token token);
 
   public List<Symbol> getAll();
 

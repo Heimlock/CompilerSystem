@@ -36,7 +36,7 @@ public class AssignmentGenerator implements GenerateCode {
   }
 
   @Override
-  public void addToken(Token token) {
+  public void addToken(Token token) throws CodeGeneratorException {
     if (Optional.ofNullable(identifier).isPresent()) {
       if (!token.getSymbol().equals(TokenSymbolTable.sAtribuicao)) {
         postfix.addToken(token);
@@ -53,7 +53,7 @@ public class AssignmentGenerator implements GenerateCode {
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
     List<String> postFixResult;
-    Integer memoryLocation = table.getMemoryLocation(identifier);
+    Integer memoryLocation = table.getVarMemoryLocation(identifier);
     Symbol symbol = table.getSymbol(identifier);
 
     postFixResult = postfix.generate();

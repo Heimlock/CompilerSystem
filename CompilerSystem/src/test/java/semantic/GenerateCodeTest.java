@@ -4,8 +4,12 @@
 package semantic;
 
 import static core.generator.GeneratorTypes.Assignment;
+import static core.generator.GeneratorTypes.Function;
 import static core.generator.GeneratorTypes.If;
+import static core.generator.GeneratorTypes.Procedure;
 import static core.generator.GeneratorTypes.Read;
+import static core.generator.GeneratorTypes.Variable;
+import static core.generator.GeneratorTypes.While;
 import static core.generator.GeneratorTypes.Write;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -43,9 +47,12 @@ public class GenerateCodeTest {
 
   @Before
   public void setup() {
-    isDebug = true;
+    isDebug = false;
     table = SymbolTable_Impl.getInstance();
     counters = GlobalCounter_Impl.getInstance();
+    if (isDebug) {
+      System.out.println("========================================");
+    }
   }
 
   @After
@@ -54,35 +61,51 @@ public class GenerateCodeTest {
     counters.clear();
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void readTest() throws CodeGeneratorException {
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramRead"), Scope.Program, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
     generator = Read.getGenerator();
     buildContext(generator, Arrays.asList("var1"));
-    assertAssembly(generator, Arrays.asList("RD", "STR -1"));
+    assertAssembly(generator, Arrays.asList("RD", "STR 0"));
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void writeTest() throws CodeGeneratorException {
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramWrite"), Scope.Program, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
     generator = Write.getGenerator();
     buildContext(generator, Arrays.asList("var1"));
-    assertAssembly(generator, Arrays.asList("LDV -1", "PRN"));
+    assertAssembly(generator, Arrays.asList("LDV 0", "PRN"));
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void assignmentTest() throws CodeGeneratorException {
-    generator = Assignment.getGenerator();
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramAssignment"), Scope.Program, Type.Inteiro);
     table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
+    generator = Assignment.getGenerator();
     buildContext(generator, Arrays.asList("var1", ":=", "1", "+", "2"));
-    assertAssembly(generator, Arrays.asList("LDC 1", "LDC 2", "ADD", "STR -1"));
+    assertAssembly(generator, Arrays.asList("LDC 1", "LDC 2", "ADD", "STR 0"));
   }
 
   @SuppressWarnings("deprecation")
   @Test
-  public void assignmenResultTypetTest() {
+  public void assignmentResultTypetTest() {
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramAssignmentResultType"), Scope.Program, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
     generator = Assignment.getGenerator();
     try {
-      table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
       buildContext(generator, Arrays.asList("var1", ":=", "1", "=", "2"));
       generator.generate();
       fail("Should throw Error based On variable Type and Expression Type Difference.");
@@ -96,9 +119,12 @@ public class GenerateCodeTest {
   public void ifTest() throws CodeGeneratorException {
     List<String> ifBlockResult;
 
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramIf"), Scope.Program, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
     //  If Block
     generator = Assignment.getGenerator();
-    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
     buildContext(generator, Arrays.asList("var1", ":=", "1", "+", "2"));
     ifBlockResult = generator.generate();
 
@@ -109,7 +135,7 @@ public class GenerateCodeTest {
     assertAssembly(generator, Arrays.asList(//
         "LDC 3", "LDC 4", "CEQ",  //  PostFix 
         "NEG", "JMPF Else_Start_0", //  If Decision
-        "LDC 1", "LDC 2", "ADD", "STR -1", // If Block
+        "LDC 1", "LDC 2", "ADD", "STR 0", // If Block
         "NULL Else_Start_0" // Else Start
         ));
   }
@@ -120,16 +146,19 @@ public class GenerateCodeTest {
     List<String> ifBlockResult;
     List<String> elseBlockResult;
 
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramIfElse"), Scope.Program, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var2"), Scope.Variable, Type.Booleano);
+
     //  If Block
     generator = Assignment.getGenerator();
-    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
     buildContext(generator, Arrays.asList("var1", ":=", "1", "+", "2"));
     ifBlockResult = generator.generate();
 
     //  else Block
     generator = Assignment.getGenerator();
-    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
-    buildContext(generator, Arrays.asList("var1", ":=", "3", "+", "4"));
+    buildContext(generator, Arrays.asList("var2", ":=", "3", "e", "4"));
     elseBlockResult = generator.generate();
 
     //  If and Else
@@ -140,11 +169,121 @@ public class GenerateCodeTest {
     assertAssembly(generator, Arrays.asList(//
         "LDC 5", "LDC 6", "CEQ", //  PostFix 
         "NEG", "JMPF Else_Start_0", //  If Decision
-        "LDC 1", "LDC 2", "ADD", "STR -1", // If Block
+        "LDC 1", "LDC 2", "ADD", "STR 0", // If Block
         "JMP Else_End_0", // If Block, Jump to the End
         "NULL Else_Start_0", // Else Start
-        "LDC 3", "LDC 4", "ADD", "STR -1", // Else Block
+        "LDC 3", "LDC 4", "AND", "STR 1", // Else Block
         "NULL Else_End_0" // Else Start
+    ));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void whileTest() throws CodeGeneratorException {
+    List<String> blockResult;
+
+    //  Context
+    table.addSymbol(new Token_Impl("ProgramWhile"), Scope.Program, Type.Inteiro);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
+    //  Block
+    generator = Assignment.getGenerator();
+    buildContext(generator, Arrays.asList("var1", ":=", "1", "+", "2"));
+    blockResult = generator.generate();
+
+    //  While
+    generator = While.getGenerator();
+    buildContext(generator, Arrays.asList("3", "=", "4"));
+    generator.addBlock(blockResult);
+    assertAssembly(generator, Arrays.asList(//
+        "NULL While_Start_0", // While Start
+        "LDC 3", "LDC 4", "CEQ", //  PostFix 
+        "NEG", "JMPF While_End_0", //  If Decision
+        "LDC 1", "LDC 2", "ADD", "STR 0", // Block
+        "JMP While_Start_0", // Jump Start
+        "NULL While_End_0" // End Label
+    ));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void procedureTest() throws CodeGeneratorException {
+    List<String> blockResult;
+
+    //  Context
+    table.addSymbol(new Token_Impl("Procedure"), Scope.Procedure);
+    table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
+
+    //  Block
+    generator = Assignment.getGenerator();
+    buildContext(generator, Arrays.asList("var1", ":=", "1", "+", "2"));
+    blockResult = generator.generate();
+
+    //  Procedure
+    generator = Procedure.getGenerator();
+    buildContext(generator, Arrays.asList("Procedure"));
+    generator.addBlock(blockResult);
+    assertAssembly(generator, Arrays.asList(//
+        "NULL Procedure_0", // Procedure Label 
+        "LDC 1", "LDC 2", "ADD", "STR 0", // Block
+        "RETURN" // Return
+    ));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void variableTest() throws CodeGeneratorException { //  TODO
+    List<String> blockResult;
+
+    //  Var Inits
+    table.addSymbol(new Token_Impl("Program"), Scope.Program);
+    table.addSymbol(new Token_Impl("int_1"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("int_2"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("bool_1"), Scope.Variable, Type.Booleano);
+    table.addSymbol(new Token_Impl("bool_2"), Scope.Variable, Type.Booleano);
+
+    //  Block
+    generator = Assignment.getGenerator();
+    buildContext(generator, Arrays.asList("int_1", ":=", "1", "+", "2"));
+    blockResult = generator.generate();
+
+    //  Variable
+    generator = Variable.getGenerator();
+    buildContext(generator, Arrays.asList("Program"));
+    generator.addBlock(blockResult);
+    assertAssembly(generator, Arrays.asList(//
+        "ALLOC 0 4", //  Alloc Vars
+        "LDC 1", "LDC 2", "ADD", "STR 0", // Block
+        "DALLOC 0 4" //  Dalloc Boolean
+    ));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void functionTest() throws CodeGeneratorException {
+    List<String> blockResult;
+
+    //  Context
+    table.addSymbol(new Token_Impl("Function"), Scope.Function);
+    table.addSymbol(new Token_Impl("int_1"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("int_2"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("bool_1"), Scope.Variable, Type.Booleano);
+    table.addSymbol(new Token_Impl("bool_2"), Scope.Variable, Type.Booleano);
+
+    //  Block
+    generator = Assignment.getGenerator();
+    buildContext(generator, Arrays.asList("int_1", ":=", "1", "+", "2"));
+    blockResult = generator.generate();
+
+    //  Function
+    generator = Function.getGenerator();
+    buildContext(generator, Arrays.asList("Function", "int_1", "int_2", "bool_1", "bool_2"));
+    generator.addBlock(blockResult);
+    assertAssembly(generator, Arrays.asList(//
+        "NULL Function_0", // Procedure Label
+        "ALLOC 0 4", // Alloc Vars
+        "LDC 1", "LDC 2", "ADD", "STR 0", // Block
+        "RETURNF 0 4" // ReturnF
     ));
   }
 
@@ -160,7 +299,7 @@ public class GenerateCodeTest {
   }
 
   @SuppressWarnings("deprecation")
-  private void buildContext(GenerateCode generator, List<String> expression) {
+  private void buildContext(GenerateCode generator, List<String> expression) throws CodeGeneratorException {
     Token token;
     for (int i = 0; i < expression.size(); i++) {
       token = new Token_Impl(expression.get(i));

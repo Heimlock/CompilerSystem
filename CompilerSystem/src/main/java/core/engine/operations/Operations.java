@@ -58,6 +58,7 @@ public enum Operations implements DoOperation {
   JMPF(Jump, (data) -> JumpOperations.jmpf(data[0])),
   CALL(Jump, (data) -> JumpOperations.call(data[0])),
   RETURN(Jump, (data) -> JumpOperations.returns()),
+  RETURNF(Jump, (data) -> JumpOperations.returnF(data[0], data[1])),
 
   //	I/O
   RD(IO, (data) -> InputOutputOperations.rd()),

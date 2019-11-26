@@ -9,7 +9,7 @@ import core.generator.specific.IfGenerator;
 import core.generator.specific.LoadGenerator;
 import core.generator.specific.ProcedureGenerator;
 import core.generator.specific.ReadGenerator;
-import core.generator.specific.SubRotineGenerator;
+import core.generator.specific.VariableGenerator;
 import core.generator.specific.WhileGenerator;
 import core.generator.specific.WriteGenerator;
 import data.interfaces.GenerateCode;
@@ -23,10 +23,10 @@ import data.interfaces.GenerateCode;
  */
 public enum GeneratorTypes {
   If(new IfGenerator()), // Ok
-  While(new WhileGenerator()),
-  SubRotine(new SubRotineGenerator()),
-  Procedure(new ProcedureGenerator()),
-  Function(new FunctionGenerator()),
+  While(new WhileGenerator()), // Ok
+  Procedure(new ProcedureGenerator()), // Ok
+  Variable(new VariableGenerator()), // Ok
+  Function(new FunctionGenerator()), // Ok
   Read(new ReadGenerator()), //  Ok
   Write(new WriteGenerator()), // Ok
   Assignment(new AssignmentGenerator()), //  Ok

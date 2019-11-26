@@ -37,7 +37,7 @@ public class ReadGenerator implements GenerateCode {
   @Override
   public List<String> generate() {
     List<String> result = new ArrayList<>();
-    Integer memoryLocation = table.getMemoryLocation(destVar);
+    Integer memoryLocation = table.getVarMemoryLocation(destVar);
     result.add(Operations.RD.name());
     result.add(String.format("%s %d", Operations.STR.name(), memoryLocation));
     return result;

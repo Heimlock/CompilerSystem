@@ -100,7 +100,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
     for (Token token : resultList) {
       switch (token.getSymbol()) {
       case sNumero:
-      case sVar:
+      case sIdentificador:
         load.addToken(token);
         break;
       case sMais:

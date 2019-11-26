@@ -15,7 +15,7 @@ import core.generator.CodeGeneratorException;
  * @since 1.0
  */
 public interface GenerateCode {
-  public void addToken(Token token);
+  public void addToken(Token token) throws CodeGeneratorException;
 
   public default void addBlock(List<String> generatedBlock) {
     throw new UnsupportedOperationException("Operation Not Overwritten!");

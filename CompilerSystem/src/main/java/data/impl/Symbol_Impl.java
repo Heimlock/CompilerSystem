@@ -71,7 +71,7 @@ public class Symbol_Impl implements Symbol {
 
   @Override
   public String toString() {
-    return String.format("Symbol [line='%2d', offset='%2d', lexemeScope='%s', lexeme='%s']", token.getLineIndex(), token.getLineOffset(), lexemeScope.toString(), token.getLexeme());
+    String type = Optional.ofNullable(lexemeType).isPresent() ? lexemeType.name() : "N/A";
+    return String.format("Symbol [line='%2d', offset='%2d', lexemeScope='%s', lexemeType='%s', lexeme='%s']", token.getLineIndex(), token.getLineOffset(), lexemeScope.toString(), type, token.getLexeme());
   }
-
 }
