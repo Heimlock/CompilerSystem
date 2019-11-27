@@ -63,14 +63,30 @@ public class SymbolTable_Impl implements SymbolTable {
   }
 
   @Override
+  public Boolean duplicatedVariable(Token token) {
+    Symbol parent = getLastDeclaredProcedure();
+    Boolean result = getAllVariablesOf(parent.getToken()).stream()//
+        .anyMatch(symbol -> symbol.getLexeme().equals(token.getLexeme()));
+    return result;
+  }
+
+  @Override
   public Boolean hasSymbol(Token token) {
-    Boolean result = this.symbolStack.stream().anyMatch(symbol -> symbol.getLexeme().equals(token.getLexeme()));
+    Symbol parent = getLastDeclaredProcedure();
+    Symbol firstProgram = getProcedureList().get(getProcedureList().size() > 1 ? 1 : 0);
+    List<Symbol> sublist = new ArrayList<>(symbolStack.subList(0, symbolStack.indexOf(firstProgram)));
+    sublist.addAll(symbolStack.subList(symbolStack.indexOf(parent), symbolStack.size()));
+    Boolean result = sublist.stream()//
+        .anyMatch(symbol -> symbol.getLexeme().equals(token.getLexeme()));
     return result;
   }
 
   @Override
   public Boolean hasSymbol(Token token, Scope scope) {
-    Boolean result = this.symbolStack.stream().anyMatch(symbol -> symbol.getLexeme() == token.getLexeme() && symbol.getScope() == scope);
+    //    Symbol parent = getLastDeclaredProcedure();
+    //    List<Symbol> sublist = new ArrayList<>(symbolStack.subList(symbolStack.indexOf(parent), symbolStack.size()));
+    Boolean result = symbolStack.stream()//
+        .anyMatch(symbol -> symbol.getLexeme().equals(token.getLexeme()) && symbol.getScope() == scope);
     return result;
   }
 
@@ -99,7 +115,7 @@ public class SymbolTable_Impl implements SymbolTable {
   @Override
   public Integer getVarMemoryLocation(Token token) {
     Symbol var = getSymbol(token);
-    Symbol parent = var;
+    Symbol parent = null;
 
     List<Symbol> variables;
     List<Symbol> procedures = symbolStack.stream()//
@@ -108,12 +124,7 @@ public class SymbolTable_Impl implements SymbolTable {
 
     Integer parentIndex = null;
     Integer varIndex = null;
-
-    for (Symbol s : symbolStack.subList(0, symbolStack.indexOf(var))) {
-      if (s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function)) {
-        parent = s;
-      }
-    }
+    parent = getParent(var);
     variables = getAllVariablesOf(parent.getToken());
 
     parentIndex = procedures.indexOf(parent);
@@ -150,5 +161,29 @@ public class SymbolTable_Impl implements SymbolTable {
       }
     }
     return variables;
+  }
+
+  private Symbol getParent(Symbol symbol) {
+    Symbol parent = symbol;
+    for (Symbol s : symbolStack.subList(0, symbolStack.indexOf(symbol))) {
+      if (s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function)) {
+        parent = s;
+      }
+    }
+    return parent;
+  }
+
+
+  @Override
+  public Symbol getLastDeclaredProcedure() {
+    List<Symbol> procedures = getProcedureList();
+    return procedures.get(procedures.size() - 1);
+  }
+
+  private List<Symbol> getProcedureList() {
+    List<Symbol> procedures = symbolStack.stream()//
+        .filter(s -> s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function))//
+        .collect(Collectors.toList());
+    return procedures;
   }
 }

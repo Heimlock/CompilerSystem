@@ -8,6 +8,7 @@ import static data.TokenSymbolTable.sDif;
 import static data.TokenSymbolTable.sDiv;
 import static data.TokenSymbolTable.sE;
 import static data.TokenSymbolTable.sFecha_Parenteses;
+import static data.TokenSymbolTable.sFuncao;
 import static data.TokenSymbolTable.sIdentificador;
 import static data.TokenSymbolTable.sIg;
 import static data.TokenSymbolTable.sMaior;
@@ -31,9 +32,10 @@ import java.util.logging.Logger;
 import core.engine.operations.Operations;
 import core.generator.CodeGeneratorException;
 import core.generator.GeneratorTypes;
+import core.generator.specific.LoadGenerator;
 import data.TokenSymbolTable;
-import data.interfaces.GenerateCode;
 import data.interfaces.PostfixNotation;
+import data.interfaces.SymbolTable;
 import data.interfaces.Token;
 import data.interfaces.Type;
 
@@ -46,6 +48,7 @@ import data.interfaces.Type;
  */
 public class PostfixNotation_Impl implements PostfixNotation {
   private Logger logger = Logger.getLogger("PostfixNotation");
+  private SymbolTable symbolTable;
   private Stack<Token> tokenStack;
   private Type resultType;
 
@@ -56,6 +59,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
     this.tokenStack = new Stack<>();
     this.resultList = new ArrayList<>();
     this.stack = new Stack<>();
+    this.symbolTable = SymbolTable_Impl.getInstance();
   }
 
   /*
@@ -64,7 +68,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
    */
   @Override
   public void addToken(Token token) {
-    Boolean isValue = token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador);
+    Boolean isValue = token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador) || token.getSymbol().equals(sFuncao);
     if (tokenStack.size() > 0) {
       Boolean lastValueIsUnaryCapable = isTokenUnaryCapable(tokenStack.lastElement());
       //  Trata comeco de Expressao
@@ -95,13 +99,21 @@ public class PostfixNotation_Impl implements PostfixNotation {
   @Override
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
-    GenerateCode load = GeneratorTypes.Load.getGenerator();
+    LoadGenerator load = GeneratorTypes.Load.getGenerator();
     convert();
     for (Token token : resultList) {
       switch (token.getSymbol()) {
       case sNumero:
+        load.addToken(token);
+        this.resultType = Type.Inteiro;
+        break;
       case sIdentificador:
         load.addToken(token);
+        this.resultType = symbolTable.getSymbol(token).getType().get();
+        break;
+      case sFuncao:
+        Integer memoryLocation = symbolTable.getProcMemoryLocation(token);
+        result.add(String.format("%s %s_%d", Operations.CALL.name(), token.getLexeme(), memoryLocation));
         break;
       case sMais:
         result.addAll(load.generate());

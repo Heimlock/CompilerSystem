@@ -3,6 +3,9 @@
  */
 package core.generator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,8 @@ import java.util.List;
 public class CodeGenerator {
   private static CodeGenerator instance = null;
   private List<String> generatedProgram;
+  private String filename;
+  private final static String BASE_OUTPUT_FILE = "./assets/output/";
 
   public static CodeGenerator getInstance() {
     if (instance == null) {
@@ -40,7 +45,24 @@ public class CodeGenerator {
     return this.generatedProgram;
   }
 
+  public void clear() {
+    this.generatedProgram.clear();
+  }
+
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
   public void saveToFile() {
-    //TODO -- Implementar IO com Arquivos
+    BufferedWriter writer;
+    try {
+      writer = new BufferedWriter(new FileWriter(String.format("%s%s.obj", BASE_OUTPUT_FILE, filename)));
+      for (String line : generatedProgram) {
+        writer.write(String.format("%s\n", line));
+      }
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

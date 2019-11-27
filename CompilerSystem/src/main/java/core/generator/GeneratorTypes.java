@@ -22,29 +22,36 @@ import data.interfaces.GenerateCode;
  * @since 1.0
  */
 public enum GeneratorTypes {
-  If(new IfGenerator()), // Ok
-  While(new WhileGenerator()), // Ok
-  Procedure(new ProcedureGenerator()), // Ok
-  Variable(new VariableGenerator()), // Ok
-  Function(new FunctionGenerator()), // Ok
-  Read(new ReadGenerator()), //  Ok
-  Write(new WriteGenerator()), // Ok
-  Assignment(new AssignmentGenerator()), //  Ok
-  Load(new LoadGenerator()), //  Ok
+  If(IfGenerator.class), // Ok
+  While(WhileGenerator.class), // Ok
+  Procedure(ProcedureGenerator.class), // Ok
+  Variable(VariableGenerator.class), // Ok
+  Function(FunctionGenerator.class), // Ok
+  Read(ReadGenerator.class), //  Ok
+  Write(WriteGenerator.class), // Ok
+  Assignment(AssignmentGenerator.class), //  Ok
+  Load(LoadGenerator.class), //  Ok
   ;
 
-  private GenerateCode generator;
+  private Class<GenerateCode> generator;
 
   private GeneratorTypes() {
     this.generator = null;
   }
 
-  private GeneratorTypes(GenerateCode generator) {
-    this.generator = generator;
+  @SuppressWarnings("unchecked")
+  private <T extends GenerateCode> GeneratorTypes(Class<T> generator) {
+    this.generator = (Class<GenerateCode>) generator;
   }
 
-  public GenerateCode getGenerator() {
-    this.generator.clear();
-    return this.generator;
+  @SuppressWarnings("unchecked")
+  public <T extends GenerateCode> T getGenerator() {
+    T result = null;
+    try {
+      result = (T) this.generator.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    return result;
   }
 }

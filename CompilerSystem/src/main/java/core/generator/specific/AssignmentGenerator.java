@@ -57,11 +57,16 @@ public class AssignmentGenerator implements GenerateCode {
     Symbol symbol = table.getSymbol(identifier);
 
     postFixResult = postfix.generate();
-    if (postfix.getType().equals(symbol.getType().get())) {
-      result.addAll(postFixResult);
-      result.add(String.format("%s %d", Operations.STR.name(), memoryLocation));
-    } else {
-      throw new CodeGeneratorException(String.format("Symbol Type does not match Postfix result Type. Symbol.type: %s, Postfix.type: %s", symbol.getType().get().name(), postfix.getType().name()));
+    try {
+      if (postfix.getType().equals(symbol.getType().get())) {
+        result.addAll(postFixResult);
+        result.add(String.format("%s %d", Operations.STR.name(), memoryLocation));
+      } else {
+        throw new CodeGeneratorException(String.format("Symbol Type does not match Postfix result Type. Symbol.type: %s, Postfix.type: %s", symbol.getType().get().name(), postfix.getType().name()));
+      }
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+      throw new CodeGeneratorException("No Identifier Or Expression");
     }
     return result;
   }

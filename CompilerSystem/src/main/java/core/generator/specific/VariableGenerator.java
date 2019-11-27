@@ -59,8 +59,8 @@ public class VariableGenerator implements GenerateCode {
     //  Alloc Variables
     result.add(String.format("%s %d %d", Operations.ALLOC.name(), memoryLocation, variables.size()));
 
-    //  Block
-    result.addAll(generatedBlocks.get(0));
+    //  Blocks
+    generatedBlocks.forEach(block -> result.addAll(block));
 
     //  Alloc Variables    
     result.add(String.format("%s %d %d", Operations.DALLOC.name(), memoryLocation, variables.size()));

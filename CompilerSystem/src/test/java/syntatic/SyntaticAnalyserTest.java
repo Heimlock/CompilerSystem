@@ -6,7 +6,6 @@ package syntatic;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.EOFException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,10 +13,13 @@ import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.Test;
 
+import core.generator.CodeGenerator;
+import core.generator.CodeGeneratorException;
 import core.lexical.file.FileInterpreter;
 import core.lexical.parser.LexicalParser;
 import core.syntactic.analyzer.SyntaticAnalyzer;
 import core.syntactic.analyzer.SyntaticAnalyzerException;
+import data.impl.GlobalCounter_Impl;
 import data.impl.SymbolTable_Impl;
 import data.interfaces.Symbol;
 
@@ -31,11 +33,15 @@ import data.interfaces.Symbol;
 public class SyntaticAnalyserTest {
   private static final String PROGRAMS_BASE_PATH = "./assets/testesSintatico/";
   private static SyntaticAnalyzer syntatic;
+  private static CodeGenerator generator;
 
-  private void setup(String filePath) {
+  private void setup(String filename) {
     Logger.getLogger("LexicalParser").setLevel(Level.OFF);
     try {
-      FileInterpreter interpreter = new FileInterpreter(filePath);
+      generator = CodeGenerator.getInstance();
+      generator.clear();
+      FileInterpreter interpreter = new FileInterpreter(String.format("%s/%s.lpd", PROGRAMS_BASE_PATH, filename));
+      generator.setFilename(filename);
       List<String> parsedProgram = interpreter.parseProgram();
       LexicalParser parser = LexicalParser.getInstance();
       parser.setProgram(parsedProgram);
@@ -55,12 +61,16 @@ public class SyntaticAnalyserTest {
       Symbol symbol =SymbolTable_Impl.getInstance().getAll().get(i); 
       System.out.println(String.format("[%d] - %s", i, symbol.toString()));
     }
+    System.out.println("****************************************");
+    generator.getGeneratedProgram().forEach(line -> System.out.println(line));
+    generator.saveToFile();
     purgeData();
   }
 
   private void purgeData() {
     SymbolTable_Impl.getInstance().purgeList();
     LexicalParser.getInstance().purgeData();
+    GlobalCounter_Impl.getInstance().clear();
   }
 
   /*
@@ -68,7 +78,7 @@ public class SyntaticAnalyserTest {
    */
   @Test
   public void program01Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 1));
+    this.setup(String.format("teste%s", 1));
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {
@@ -83,7 +93,7 @@ public class SyntaticAnalyserTest {
    * Teste de ponto e virgula excedente
    */
   public void program02Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 2));
+    this.setup(String.format("teste%s", 2));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
@@ -100,7 +110,7 @@ public class SyntaticAnalyserTest {
    * Teste de virgula a mais
    */
   public void program03Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 3));
+    this.setup(String.format("teste%s", 3));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
@@ -117,9 +127,11 @@ public class SyntaticAnalyserTest {
    * Ok
    */
   public void program04Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 4));
+    this.setup(String.format("teste%s", 4));
     try {
       syntatic.analyzeProgram();
+    } catch (SyntaticAnalyzerException e) {
+      assertTrue(e.getMessage().startsWith("[handleRead]") && e.getMessage().endsWith(", Context: Pesquisa Declarar Variavel Tabela"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -132,7 +144,7 @@ public class SyntaticAnalyserTest {
    * Ok
    */
   public void program05Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 5));
+    this.setup(String.format("teste%s", 5));
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {
@@ -147,7 +159,7 @@ public class SyntaticAnalyserTest {
    * Teste de operador relacional
    */
   public void program06Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 6));
+    this.setup(String.format("teste%s", 6));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
@@ -164,11 +176,9 @@ public class SyntaticAnalyserTest {
    * Teste de atribuicao
    */
   public void program07Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 7));
+    this.setup(String.format("teste%s", 7));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleCommands]") && e.getMessage().endsWith(", Context: Ponto e Virgula"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -181,7 +191,7 @@ public class SyntaticAnalyserTest {
    * Teste de operador logico
    */
   public void program08Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 8));
+    this.setup(String.format("teste%s", 8));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
@@ -198,7 +208,7 @@ public class SyntaticAnalyserTest {
    * Ok
    */
   public void program09Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 9));
+    this.setup(String.format("teste%s", 9));
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {
@@ -213,7 +223,7 @@ public class SyntaticAnalyserTest {
    * Teste de numero com ponto
    */
   public void program10Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 10));
+    this.setup(String.format("teste%s", 10));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
@@ -230,11 +240,11 @@ public class SyntaticAnalyserTest {
    * Teste de expressao em lugar errado
    */
   public void program11Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 11));
+    this.setup(String.format("teste%s", 11));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleCommands]") && e.getMessage().endsWith(", Context: Ponto e Virgula"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("No Identifier Or Expression"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -247,11 +257,11 @@ public class SyntaticAnalyserTest {
    * Teste de fim a mais
    */
   public void program12Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 12));
+    this.setup(String.format("teste%s", 12));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleSubRotines]") && e.getMessage().endsWith(", Context: Ponto Virgula"));
+      assertTrue(e.getMessage().startsWith("[handleCommands]") && e.getMessage().endsWith(", Context: Inicio"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -264,7 +274,7 @@ public class SyntaticAnalyserTest {
    * Teste que falta inicio
    */
   public void program13Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 13));
+    this.setup(String.format("teste%s", 13));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
@@ -281,7 +291,7 @@ public class SyntaticAnalyserTest {
    * Ok
    */
   public void program14Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 14));
+    this.setup(String.format("teste%s", 14));
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {
@@ -296,10 +306,11 @@ public class SyntaticAnalyserTest {
    * Teste falta ; depois do procedimento
    */
   public void program15Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 15));
+    this.setup(String.format("teste%s", 15));
     try {
       syntatic.analyzeProgram();
     } catch (SyntaticAnalyzerException e) {
+      System.err.println(e.getMessage());
       assertTrue(e.getMessage().startsWith("[handleSubRotines]") && e.getMessage().endsWith(", Context: Ponto Virgula"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
@@ -313,11 +324,11 @@ public class SyntaticAnalyserTest {
    * Teste falta ponto final
    */
   public void program16Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 16));
+    this.setup(String.format("teste%s", 16));
     try {
       syntatic.analyzeProgram();
-    } catch (EOFException e) {
-      assertTrue(e.getMessage().contains("End of Source Program -- Read Char"));
+    } catch (SyntaticAnalyzerException e) {
+      assertTrue(e.getMessage().startsWith("[handleFactor]") && e.getMessage().endsWith(", Context: Identificador Desconhecido"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -330,9 +341,11 @@ public class SyntaticAnalyserTest {
    * Ok
    */
   public void program17Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 17));
+    this.setup(String.format("teste%s", 17));
     try {
       syntatic.analyzeProgram();
+    } catch (SyntaticAnalyzerException e) {
+      assertTrue(e.getMessage().startsWith("[handleFactor]") && e.getMessage().endsWith(", Context: Identificador Desconhecido"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -345,7 +358,7 @@ public class SyntaticAnalyserTest {
    * Ok
    */
   public void program18Test() {
-    this.setup(String.format("%s/teste%s.lpd", PROGRAMS_BASE_PATH, 18));
+    this.setup(String.format("teste%s", 18));
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {
