@@ -111,6 +111,7 @@ public class SyntaticAnalyzer {
         nextToken();
         if (token.getSymbol() == sPonto_Virgula) {
           resultProgram.addProgramLines(handleBlock());
+          this.symbolTable.removeUntil(Scope.Program); //  TODO Remove da Tabela de Simbolos
           if (token.getSymbol() == sPonto) {
             //  is End Of Program ?
             //            if (parser.getRemainingLines() == 0) {
@@ -420,6 +421,7 @@ public class SyntaticAnalyzer {
     } else {
       throwError("handleDeclareProcedure", token, "Identificador");
     }
+    this.symbolTable.removeUntil(Scope.Procedure); //  TODO Remove da Tabela de Simbolos
     return procedureGenerator.generate();
   }
 
@@ -460,6 +462,7 @@ public class SyntaticAnalyzer {
     } else {
       throwError("handleDeclareFunction", token, "Identificador");
     }
+    this.symbolTable.removeUntil(Scope.Function); //  TODO Remove da Tabela de Simbolos
     return functionGenerator.generate();
   }
 
@@ -510,6 +513,7 @@ public class SyntaticAnalyzer {
         if (this.symbolTable.getSymbol(token).getScope() == Scope.Function) {
           tokenList.add(handleFunctionCall());
         } else {
+          tokenList.add(token);
           nextToken();
         }
       } else {

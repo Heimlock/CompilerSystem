@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import data.interfaces.Scope;
@@ -24,7 +25,7 @@ import data.interfaces.Type;
  */
 public class SymbolTable_Impl implements SymbolTable {
   private static SymbolTable_Impl instance = null;
-  private List<Symbol> symbolStack;
+  private Stack<Symbol> symbolStack;
 
   public static SymbolTable getInstance() {
     if (instance == null) {
@@ -34,7 +35,16 @@ public class SymbolTable_Impl implements SymbolTable {
   }
 
   private SymbolTable_Impl() {
-    this.symbolStack = new ArrayList<>();
+    this.symbolStack = new Stack<>();
+  }
+
+  @Override
+  public void removeUntil(Scope scope) {
+    List<Symbol> list = symbolStack.stream().filter(s -> s.getScope().equals(scope)).collect(Collectors.toList());
+    Symbol lastOfScope = list.get(list.size() - 1);
+    while (symbolStack.lastElement() != lastOfScope) {
+      symbolStack.pop();
+    }
   }
 
   @Override
@@ -72,11 +82,11 @@ public class SymbolTable_Impl implements SymbolTable {
 
   @Override
   public Boolean hasSymbol(Token token) {
-    Symbol parent = getLastDeclaredProcedure();
-    Symbol firstProgram = getProcedureList().get(getProcedureList().size() > 1 ? 1 : 0);
-    List<Symbol> sublist = new ArrayList<>(symbolStack.subList(0, symbolStack.indexOf(firstProgram)));
-    sublist.addAll(symbolStack.subList(symbolStack.indexOf(parent), symbolStack.size()));
-    Boolean result = sublist.stream()//
+    //    Symbol parent = getLastDeclaredProcedure();
+    //    Symbol firstProgram = getProcedureList().get(getProcedureList().size() > 1 ? 1 : 0);
+    //    List<Symbol> sublist = new ArrayList<>(symbolStack.subList(0, symbolStack.indexOf(firstProgram)));
+    //    sublist.addAll(symbolStack.subList(symbolStack.indexOf(parent), symbolStack.size()));
+    Boolean result = symbolStack.stream()//
         .anyMatch(symbol -> symbol.getLexeme().equals(token.getLexeme()));
     return result;
   }

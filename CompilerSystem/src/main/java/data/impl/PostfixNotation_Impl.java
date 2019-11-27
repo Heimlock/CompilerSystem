@@ -7,6 +7,7 @@ import static data.TokenSymbolTable.sAbre_Parenteses;
 import static data.TokenSymbolTable.sDif;
 import static data.TokenSymbolTable.sDiv;
 import static data.TokenSymbolTable.sE;
+import static data.TokenSymbolTable.sFalso;
 import static data.TokenSymbolTable.sFecha_Parenteses;
 import static data.TokenSymbolTable.sFuncao;
 import static data.TokenSymbolTable.sIdentificador;
@@ -21,6 +22,7 @@ import static data.TokenSymbolTable.sMult;
 import static data.TokenSymbolTable.sNao;
 import static data.TokenSymbolTable.sNumero;
 import static data.TokenSymbolTable.sOu;
+import static data.TokenSymbolTable.sVerdadeiro;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,7 +111,15 @@ public class PostfixNotation_Impl implements PostfixNotation {
         break;
       case sIdentificador:
         load.addToken(token);
-        this.resultType = symbolTable.getSymbol(token).getType().get();
+        if (token.getLexeme().startsWith("+")) {
+          token.setLexeme(token.getLexeme().substring(1));
+          this.resultType = symbolTable.getSymbol(token).getType().get();
+        } else if (token.getLexeme().startsWith("-")) {
+          token.setLexeme(token.getLexeme().substring(1));
+          this.resultType = symbolTable.getSymbol(token).getType().get();
+        } else {
+          this.resultType = symbolTable.getSymbol(token).getType().get();
+        }
         break;
       case sFuncao:
         Integer memoryLocation = symbolTable.getProcMemoryLocation(token);
@@ -180,6 +190,16 @@ public class PostfixNotation_Impl implements PostfixNotation {
         result.add(Operations.CDIF.name());
         this.resultType = Type.Booleano;
         break;
+      case sVerdadeiro:
+        result.addAll(load.generate());
+        result.add(String.format("%s %d", Operations.LDC.name(), 1));
+        this.resultType = Type.Booleano;
+        break;
+      case sFalso:
+        result.addAll(load.generate());
+        result.add(String.format("%s %d", Operations.LDC.name(), 0));
+        this.resultType = Type.Booleano;
+        break;
       default:
         logger.severe(String.format("Unexpected Token. Token = %s", token.toString()));
         throw new CodeGeneratorException(String.format("Unexpected Token. Token = %s", token.toString()));
@@ -209,7 +229,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
   }
 
   private void handleToken(Token token) throws CodeGeneratorException {
-    if (token.getSymbol().equals(sNumero)) {
+    if (token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador)) {
       resultList.add(token);
     } else {
       if (token.getSymbol().equals(sFecha_Parenteses)) {
@@ -250,7 +270,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
   }
 
   private Boolean canHandle(Token token) {
-    List<TokenSymbolTable> validSymbol = Arrays.asList(sAbre_Parenteses, sFecha_Parenteses, sNumero, sIdentificador, sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif);
+    List<TokenSymbolTable> validSymbol = Arrays.asList(sVerdadeiro, sFalso, sAbre_Parenteses, sFecha_Parenteses, sNumero, sIdentificador, sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif);
     return validSymbol.contains(token.getSymbol());
   }
 

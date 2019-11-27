@@ -6,6 +6,7 @@ package syntatic;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.EOFException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import core.generator.CodeGenerator;
-import core.generator.CodeGeneratorException;
 import core.lexical.file.FileInterpreter;
 import core.lexical.parser.LexicalParser;
 import core.syntactic.analyzer.SyntaticAnalyzer;
@@ -243,8 +243,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 11));
     try {
       syntatic.analyzeProgram();
-    } catch (CodeGeneratorException e) {
-      assertTrue(e.getMessage().startsWith("No Identifier Or Expression"));
+    } catch (SyntaticAnalyzerException e) {
+      assertTrue(e.getMessage().startsWith("[callProcedure]") && e.getMessage().endsWith(", Context: Procedimento Desconhecido"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -327,8 +327,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 16));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleFactor]") && e.getMessage().endsWith(", Context: Identificador Desconhecido"));
+    } catch (EOFException e) {
+      assertTrue(e.getMessage().startsWith("End of Source Program -- Read Char"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();

@@ -35,16 +35,31 @@ public class LoadGenerator implements GenerateCode {
   @Override
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
+    Token auxToken = null;
+    Boolean isNeg = false;
     for (Token token : tokenList) {
       switch (token.getSymbol()) {
       case sNumero:
         result.add(String.format("LDC %s", token.getLexeme()));
         break;
-      case sVar:
-        if (symbolTable.hasSymbol(token)) {
-          result.add(String.format("LDV %d", symbolTable.getVarMemoryLocation(token)));
+      case sIdentificador:
+        if (token.getLexeme().startsWith("+")) {
+          auxToken = token;
+          auxToken.setLexeme(token.getLexeme().substring(1));
+        } else if (token.getLexeme().startsWith("-")) {
+          auxToken = token;
+          auxToken.setLexeme(token.getLexeme().substring(1));
+          isNeg = true;
         } else {
-
+          auxToken = token;
+        }
+        if (symbolTable.hasSymbol(auxToken)) {
+          result.add(String.format("LDV %d", symbolTable.getVarMemoryLocation(auxToken)));
+          if (isNeg) {
+            result.add("NEG");
+          }
+        } else {
+          throw new CodeGeneratorException(String.format("Var/Function not Found. Token = %s", auxToken.toString()));
         }
         break;
       default:

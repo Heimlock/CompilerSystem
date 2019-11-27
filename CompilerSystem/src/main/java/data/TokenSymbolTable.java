@@ -48,6 +48,8 @@ public enum TokenSymbolTable {
   sMenos("-", 4),
   sMult("*", 5),
   sDiv("div", 5),
+  sVerdadeiro("verdadeiro"),
+  sFalso("falso"),
   sE("e", 2),
   sOu("ou", 1),
   sNao("nao", 6),
