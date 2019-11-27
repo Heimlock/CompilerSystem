@@ -1,7 +1,7 @@
              
 
 {Teste ponto e virgula antes do senao - ok}
-programa test1;
+programa test14;
 
 var a,b,c: inteiro;
 

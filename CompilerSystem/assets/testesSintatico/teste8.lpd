@@ -1,6 +1,6 @@
 
 {Teste operador logico a mais}
-programa test1;
+programa test8;
 
 var a,b,c: inteiro;
 

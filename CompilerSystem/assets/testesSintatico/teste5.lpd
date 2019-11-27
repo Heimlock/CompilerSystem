@@ -1,6 +1,6 @@
 
 {Teste sem procedimentos - deve compilar}
-programa test1;
+programa test5;
 
 var a,b,c: inteiro;
 

@@ -1,6 +1,6 @@
 
 {Teste duplo inicio fim - OK}
-programa test1;
+programa test18;
 
 var a,b,c: inteiro;
 

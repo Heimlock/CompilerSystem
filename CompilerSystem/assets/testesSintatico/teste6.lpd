@@ -1,6 +1,6 @@
 
 {Teste erro operador relacional}
-programa test1;
+programa test6;
 
 var a,b,c: inteiro;
 

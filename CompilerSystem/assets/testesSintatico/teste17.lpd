@@ -1,6 +1,6 @@
 
 {Teste procedimento aninhado - OK}
-programa test1;
+programa test17;
 
 var a,b,c: inteiro;
 

@@ -1,6 +1,6 @@
 
 {Teste expressao em lugar errado}
-programa test1;
+programa test11;
 
 var a,b,c: inteiro;
 
