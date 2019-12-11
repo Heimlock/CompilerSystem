@@ -13,9 +13,11 @@ import data.TokenSymbolTable;
  * @since 1.0
  */
 public interface GlobalCounter {
-  public void increment(TokenSymbolTable symbol);
+  public Integer postIncrement(TokenSymbolTable symbol);
 
-  public Integer getCount(TokenSymbolTable symbol);
+  public Integer postIncrement(String identifier);
+
+  public Integer getCount(String identifier);
 
   // Debug
   public void clear();

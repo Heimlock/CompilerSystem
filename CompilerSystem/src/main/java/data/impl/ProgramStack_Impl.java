@@ -80,4 +80,10 @@ public class ProgramStack_Impl implements ProgramStack {
     }
     return row;
   }
+
+  @Override
+  public void reset() {
+    programCounter = 0;
+    stack.clear();
+  }
 }

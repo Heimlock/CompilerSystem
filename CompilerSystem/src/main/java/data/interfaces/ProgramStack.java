@@ -29,4 +29,6 @@ public interface ProgramStack {
   public void putData(int index, String value);
 
   public void push(String value);
+
+  public void reset();
 }

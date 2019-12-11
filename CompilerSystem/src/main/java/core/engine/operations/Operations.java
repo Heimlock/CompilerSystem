@@ -25,6 +25,8 @@ public enum Operations implements DoOperation {
   START(Control, (data) -> ControlOperations.start()),
   HLT(Control, (data) -> ControlOperations.hlt()),
   NULL(Control),
+  RETURN(Control, (data) -> ControlOperations.returns()),
+  RETURNF(Control, (data) -> ControlOperations.returnF(data[0], data[1])),
 
   //	Memory
   LDC(Memory, (data) -> MemoryOperations.ldc(data[0])),
@@ -57,8 +59,6 @@ public enum Operations implements DoOperation {
   JMP(Jump, (data) -> JumpOperations.jmp(data[0])),
   JMPF(Jump, (data) -> JumpOperations.jmpf(data[0])),
   CALL(Jump, (data) -> JumpOperations.call(data[0])),
-  RETURN(Jump, (data) -> JumpOperations.returns()),
-  RETURNF(Jump, (data) -> JumpOperations.returnF(data[0], data[1])),
 
   //	I/O
   RD(IO, (data) -> InputOutputOperations.rd()),

@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 import core.engine.operations.Operations;
-import data.impl.SymbolTable_Impl;
+import data.impl.GlobalCounter_Impl;
 import data.interfaces.GenerateCode;
-import data.interfaces.Symbol;
-import data.interfaces.SymbolTable;
+import data.interfaces.GlobalCounter;
 import data.interfaces.Token;
 
 /**
@@ -24,15 +23,18 @@ import data.interfaces.Token;
 public class FunctionGenerator implements GenerateCode {
   private Token identifier;
   private List<Token> vars;
-  private SymbolTable table;
+  //  private SymbolTable table;
+  private GlobalCounter counters;
   private List<List<String>> generatedBlocks;
+
 
   private final static String FUNCTION_LABEL = "%s_%d";
 
   public FunctionGenerator() {
     vars = new ArrayList<>();
     generatedBlocks = new ArrayList<>();
-    table = SymbolTable_Impl.getInstance();
+    //    table = SymbolTable_Impl.getInstance();
+    counters = GlobalCounter_Impl.getInstance();
   }
 
   @Override
@@ -47,17 +49,18 @@ public class FunctionGenerator implements GenerateCode {
   @Override
   public List<String> generate() {
     List<String> result = new ArrayList<>();
-    List<Symbol> variables = table.getAllVariablesOf(identifier);
-    Integer memoryLocation = table.getProcMemoryLocation(identifier);
+    Integer funcNumber = counters.postIncrement(identifier.getLexeme());
+    //    List<Symbol> variables = table.getAllVariablesOf(identifier);
+    //    Integer memoryLocation = table.getVarMemoryLocation(variables.get(0));
 
     //  Procedure Label
-    result.add(String.format(String.format("%s %s", Operations.NULL.name(), FUNCTION_LABEL), identifier.getLexeme(), memoryLocation));
-    //  Alloc Variables
-    result.add(String.format("%s %d %d", Operations.ALLOC.name(), memoryLocation, variables.size()));
+    result.add(String.format(String.format("%s %s", Operations.NULL.name(), FUNCTION_LABEL), identifier.getLexeme(), funcNumber));
+    //    //  Alloc Variables
+    //    result.add(String.format("%s %d %d", Operations.ALLOC.name(), memoryLocation, variables.size()));
     //  Add Block
     result.addAll(generatedBlocks.get(0));
-    //  Add ReturnF
-    result.add(String.format("%s %d %d", Operations.RETURNF.name(), memoryLocation, variables.size()));
+    //    //  Add ReturnF
+    //    result.add(String.format("%s %d %d", Operations.RETURNF.name(), memoryLocation, variables.size()));
     return result;
   }
 

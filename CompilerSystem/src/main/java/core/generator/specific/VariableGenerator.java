@@ -53,17 +53,22 @@ public class VariableGenerator implements GenerateCode {
   @Override
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
+    Symbol symbolId = table.getSymbol(identifier);
     List<Symbol> variables = table.getAllVariablesOf(identifier);
-    Integer memoryLocation = table.getProcMemoryLocation(identifier);
-
-    //  Alloc Variables
-    result.add(String.format("%s %d %d", Operations.ALLOC.name(), memoryLocation, variables.size()));
 
     //  Blocks
     generatedBlocks.forEach(block -> result.addAll(block));
 
-    //  Alloc Variables    
-    result.add(String.format("%s %d %d", Operations.DALLOC.name(), memoryLocation, variables.size()));
+    if (variables.size() != 0) {
+      Integer memoryLocation = table.getVarMemoryLocation(variables.get(0));
+      //  Alloc Variables
+      result.add(0, String.format("%s %d %d", Operations.ALLOC.name(), memoryLocation, variables.size()));
+
+      //  Dalloc Variables
+      if (!symbolId.getScope().equals(Scope.Function)) {
+        result.add(String.format("%s %d %d", Operations.DALLOC.name(), memoryLocation, variables.size()));
+      }
+    }
 
     return result;
   }

@@ -15,19 +15,24 @@ import static data.TokenSymbolTable.sIg;
 import static data.TokenSymbolTable.sMaior;
 import static data.TokenSymbolTable.sMaiorIg;
 import static data.TokenSymbolTable.sMais;
+import static data.TokenSymbolTable.sMais_Unario;
 import static data.TokenSymbolTable.sMenor;
 import static data.TokenSymbolTable.sMenorIg;
 import static data.TokenSymbolTable.sMenos;
+import static data.TokenSymbolTable.sMenos_Unario;
 import static data.TokenSymbolTable.sMult;
 import static data.TokenSymbolTable.sNao;
 import static data.TokenSymbolTable.sNumero;
 import static data.TokenSymbolTable.sOu;
 import static data.TokenSymbolTable.sVerdadeiro;
+import static data.interfaces.Type.Booleano;
+import static data.interfaces.Type.Inteiro;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -70,16 +75,19 @@ public class PostfixNotation_Impl implements PostfixNotation {
    */
   @Override
   public void addToken(Token token) {
-    Boolean isValue = token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador) || token.getSymbol().equals(sFuncao);
+    Token auxToken = null;
+    Boolean isValue = token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador) || token.getSymbol().equals(sFuncao) || token.getSymbol().equals(sAbre_Parenteses);
     if (tokenStack.size() > 0) {
       Boolean lastValueIsUnaryCapable = isTokenUnaryCapable(tokenStack.lastElement());
       //  Trata comeco de Expressao
       if (tokenStack.size() == 1 && isValue && lastValueIsUnaryCapable) {
-        token.setLexeme(String.format("%s%s", tokenStack.lastElement().getLexeme(), token.getLexeme()));
-        tokenStack.pop();
+        auxToken = tokenStack.pop();
+        auxToken.setSymbol(token.getSymbol().equals(sMais) ? sMais_Unario : sMenos_Unario);
+        tokenStack.add(auxToken);
       } else if (tokenStack.size() >= 2 && lastValueIsUnaryCapable && isTokenOperation(tokenStack.get(tokenStack.size() - 2))) {
-        token.setLexeme(String.format("%s%s", tokenStack.lastElement().getLexeme(), token.getLexeme()));
-        tokenStack.pop();
+        auxToken = tokenStack.pop();
+        auxToken.setSymbol(token.getSymbol().equals(sMais) ? sMais_Unario : sMenos_Unario);
+        tokenStack.add(auxToken);
       }
     }
     this.tokenStack.add(token);
@@ -102,103 +110,176 @@ public class PostfixNotation_Impl implements PostfixNotation {
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
     LoadGenerator load = GeneratorTypes.Load.getGenerator();
+
     convert();
+    System.out.println();
     for (Token token : resultList) {
       switch (token.getSymbol()) {
       case sNumero:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
+        } else {
+          this.resultType = Inteiro;
+        }
         load.addToken(token);
-        this.resultType = Type.Inteiro;
+        result.addAll(load.generate());
+        load.clear();
+        this.resultType = Inteiro;
         break;
       case sIdentificador:
-        load.addToken(token);
-        if (token.getLexeme().startsWith("+")) {
-          token.setLexeme(token.getLexeme().substring(1));
-          this.resultType = symbolTable.getSymbol(token).getType().get();
-        } else if (token.getLexeme().startsWith("-")) {
-          token.setLexeme(token.getLexeme().substring(1));
-          this.resultType = symbolTable.getSymbol(token).getType().get();
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(symbolTable.getSymbol(token).getType().get()), token.getSymbol());
         } else {
           this.resultType = symbolTable.getSymbol(token).getType().get();
         }
+        load.addToken(token);
+        result.addAll(load.generate());
+        load.clear();
+        this.resultType = symbolTable.getSymbol(token).getType().get();
         break;
       case sFuncao:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(symbolTable.getSymbol(token).getType().get()), token.getSymbol());
+        } else {
+          this.resultType = symbolTable.getSymbol(token).getType().get();
+        }
         Integer memoryLocation = symbolTable.getProcMemoryLocation(token);
         result.add(String.format("%s %s_%d", Operations.CALL.name(), token.getLexeme(), memoryLocation));
         break;
       case sMais:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
+
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.ADD.name());
-        this.resultType = Type.Inteiro;
+        this.resultType = Inteiro;
+        break;
+      case sMais_Unario:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
+        } else {
+          this.resultType = Inteiro;
+        }
+        this.resultType = Inteiro;
         break;
       case sMenos:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.SUB.name());
-        this.resultType = Type.Inteiro;
+        this.resultType = Inteiro;
+        break;
+      case sMenos_Unario:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
+        } else {
+          this.resultType = Inteiro;
+        }
+        result.add(Operations.INV.name());
+        this.resultType = Inteiro;
         break;
       case sMult:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.MULT.name());
-        this.resultType = Type.Inteiro;
+        this.resultType = Inteiro;
         break;
       case sDiv:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.DIVI.name());
-        this.resultType = Type.Inteiro;
+        this.resultType = Inteiro;
         break;
       case sNao:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(Booleano), token.getSymbol());
+        } else {
+          this.resultType = Booleano;
+        }
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.NEG.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sMaior:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.CMA.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sMaiorIg:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.CMAQ.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sMenor:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.CME.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sMenorIg:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.CMEQ.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sE:
+        verifyCompatibility(resultType.equals(Booleano), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.AND.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sOu:
+        verifyCompatibility(resultType.equals(Booleano), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.OR.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sIg:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.CEQ.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sDif:
+        verifyCompatibility(resultType.equals(Inteiro), token.getSymbol());
         result.addAll(load.generate());
+        load.clear();
         result.add(Operations.CDIF.name());
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sVerdadeiro:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(Booleano), token.getSymbol());
+        } else {
+          this.resultType = Booleano;
+        }
         result.addAll(load.generate());
+        load.clear();
         result.add(String.format("%s %d", Operations.LDC.name(), 1));
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       case sFalso:
+        if (Optional.ofNullable(this.resultType).isPresent()) {
+          verifyCompatibility(resultType.equals(Booleano), token.getSymbol());
+        } else {
+          this.resultType = Booleano;
+        }
         result.addAll(load.generate());
+        load.clear();
         result.add(String.format("%s %d", Operations.LDC.name(), 0));
-        this.resultType = Type.Booleano;
+        this.resultType = Booleano;
         break;
       default:
         logger.severe(String.format("Unexpected Token. Token = %s", token.toString()));
@@ -270,7 +351,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
   }
 
   private Boolean canHandle(Token token) {
-    List<TokenSymbolTable> validSymbol = Arrays.asList(sVerdadeiro, sFalso, sAbre_Parenteses, sFecha_Parenteses, sNumero, sIdentificador, sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif);
+    List<TokenSymbolTable> validSymbol = Arrays.asList(sVerdadeiro, sFalso, sAbre_Parenteses, sFecha_Parenteses, sNumero, sIdentificador, sMais, sMenos, sMais_Unario, sMenos_Unario, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif);
     return validSymbol.contains(token.getSymbol());
   }
 
@@ -282,6 +363,14 @@ public class PostfixNotation_Impl implements PostfixNotation {
   private Boolean isTokenOperation(Token token) {
     List<TokenSymbolTable> operationSymbol = Arrays.asList(sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif);
     return operationSymbol.contains(token.getSymbol());
+  }
+
+  private void verifyCompatibility(Boolean condition, TokenSymbolTable symbol) throws CodeGeneratorException {
+    if (!condition) {
+      String message = String.format("Incompatible Type! Last Type %s Operation %s; Line %d, PostFix == '%s'", resultType.name(), symbol.name(), tokenStack.lastElement().getLineIndex(), toString());
+      logger.severe(message);
+      throw new CodeGeneratorException(message);
+    }
   }
 
   @Override

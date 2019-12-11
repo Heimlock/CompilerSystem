@@ -51,7 +51,7 @@ public class WhileGenerator implements GenerateCode {
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
     List<String> postFixResult = postfix.generate();
-    Integer whileCount = counters.getCount(TokenSymbolTable.sEnquanto);
+    Integer whileCount = counters.postIncrement(TokenSymbolTable.sEnquanto);
 
     //  While Start Label
     result.add(String.format(String.format("%s %s", Operations.NULL.name(), WHILE_START), whileCount));

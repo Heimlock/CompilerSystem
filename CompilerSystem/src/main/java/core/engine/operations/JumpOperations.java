@@ -40,22 +40,7 @@ public class JumpOperations {
    * S:=s + 1; M[s]:=i + 1; i:=t
    */
   protected static void call(int t) {
-    memory.push(program.getCounter() + 1);
+    memory.push(program.getCounter());
     program.setCounter(t);
-  }
-
-  /*
-   * i:=M[s]; s:=s - 1
-   */
-  protected static void returns() {
-    int a = memory.pop();
-    program.setCounter(a);
-  }
-
-  protected static void returnF(int m, int n) {
-    int result = memory.pop();
-    Operations.DALLOC.compute(m, n);
-    returns();
-    memory.push(result);
   }
 }

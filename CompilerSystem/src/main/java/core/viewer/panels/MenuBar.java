@@ -105,14 +105,13 @@ public class MenuBar extends JMenuBar {
     openFileAction.addActionListener(evt -> {
       Log.log(Level.INFO, "openFileAction");
       try {
+        VirtualMachineEngine.getInstance().reset();
         FileInterpreter interpreter = new FileInterpreter();
         interpreter.parseOperations();
         VirtualMachineEngine.getInstance().updateViewer();
       } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     });

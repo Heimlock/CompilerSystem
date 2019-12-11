@@ -18,7 +18,7 @@ import data.interfaces.GlobalCounter;
  */
 public class GlobalCounter_Impl implements GlobalCounter {
   private static GlobalCounter_Impl instance = null;
-  private Map<TokenSymbolTable, Integer> dataMap;
+  private Map<String, Integer> dataMap;
 
   public static GlobalCounter_Impl getInstance() {
     if (instance == null) {
@@ -32,17 +32,25 @@ public class GlobalCounter_Impl implements GlobalCounter {
   }
 
   @Override
-  public void increment(TokenSymbolTable symbol) {
-    Integer currentValue = 0;
-    if (dataMap.containsKey(symbol)) {
-      currentValue = dataMap.get(symbol) + 1;
-    }
-    dataMap.put(symbol, currentValue);
+  public Integer postIncrement(TokenSymbolTable symbol) {
+    return this.postIncrement(symbol.name());
   }
 
   @Override
-  public Integer getCount(TokenSymbolTable symbol) {
-    return dataMap.getOrDefault(symbol, 0);
+  public Integer postIncrement(String identifier) {
+    Integer currentValue = dataMap.getOrDefault(identifier, 0);
+    dataMap.put(identifier, currentValue + 1);
+    return currentValue;
+  }
+
+  //  @Override
+  //  public Integer getCount(TokenSymbolTable symbol) {
+  //    return this.getCount(symbol.name());
+  //  }
+
+  @Override
+  public Integer getCount(String identifier) {
+    return dataMap.getOrDefault(identifier, 1) - 1;
   }
 
   @Override

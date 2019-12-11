@@ -1,0 +1,19 @@
+programa teste_1;
+  var x,y,total: inteiro;
+
+  procedimento mostra;
+    var total: inteiro;
+  inicio
+    total:= x+y;
+    escreva(total);
+  fim;
+
+inicio
+  total := 1;
+  leia(x);
+  leia(y);
+  mostra;
+  escreva(total);
+  total := x;
+  escreva(total);
+fim.

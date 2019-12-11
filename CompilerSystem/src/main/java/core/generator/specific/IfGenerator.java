@@ -15,6 +15,7 @@ import data.interfaces.GenerateCode;
 import data.interfaces.GlobalCounter;
 import data.interfaces.PostfixNotation;
 import data.interfaces.Token;
+import data.interfaces.Type;
 
 /**
  * Copyright (c) 2019
@@ -51,12 +52,17 @@ public class IfGenerator implements GenerateCode {
   public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
     List<String> postFixResult = postfix.generate();
-    Integer ifCount = counters.getCount(TokenSymbolTable.sSe);
+    Integer ifCount = counters.postIncrement(TokenSymbolTable.sSe);
+
+    //  Verify if Expression is a Boolean
+    if (!postfix.getType().equals(Type.Booleano)) {
+      throw new CodeGeneratorException("Incompatible Expression Type! Context: If");
+    }
 
     //  Add Expression
     result.addAll(postFixResult);
     //  Negate Result
-    result.add(String.format("%s", Operations.NEG.name()));
+    //    result.add(String.format("%s", Operations.NEG.name()));
     //  Jump Else
     result.add(String.format(String.format("%s %s", Operations.JMPF.name(), ELSE_START), ifCount));
     //  If Block

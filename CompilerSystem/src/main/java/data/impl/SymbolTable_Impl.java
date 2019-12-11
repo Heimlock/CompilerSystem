@@ -124,22 +124,15 @@ public class SymbolTable_Impl implements SymbolTable {
 
   @Override
   public Integer getVarMemoryLocation(Token token) {
-    Symbol var = getSymbol(token);
-    Symbol parent = null;
-
-    List<Symbol> variables;
-    List<Symbol> procedures = symbolStack.stream()//
-        .filter(s -> s.getScope().equals(Scope.Program) || s.getScope().equals(Scope.Procedure) || s.getScope().equals(Scope.Function))//
+    Integer result = null;
+    List<Symbol> variables = symbolStack.stream()//
+        .filter(s -> s.getScope().equals(Scope.Variable))//
         .collect(Collectors.toList());
-
-    Integer parentIndex = null;
-    Integer varIndex = null;
-    parent = getParent(var);
-    variables = getAllVariablesOf(parent.getToken());
-
-    parentIndex = procedures.indexOf(parent);
-    varIndex = variables.indexOf(var);
-    return parentIndex + varIndex;
+    List<Symbol> variable = variables.stream()//
+        .filter(s -> s.getLexeme().equals(token.getLexeme()))//
+        .collect(Collectors.toList());
+    result = variables.indexOf(variable.get(variable.size() - 1));
+    return result;
   }
 
   @Override

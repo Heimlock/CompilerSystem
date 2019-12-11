@@ -7,9 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import core.engine.operations.Operations;
+import core.generator.CodeGeneratorException;
 import data.TokenSymbolTable;
+import data.impl.GlobalCounter_Impl;
 import data.impl.SymbolTable_Impl;
 import data.interfaces.GenerateCode;
+import data.interfaces.GlobalCounter;
+import data.interfaces.Scope;
+import data.interfaces.Symbol;
 import data.interfaces.SymbolTable;
 import data.interfaces.Token;
 
@@ -21,8 +26,14 @@ import data.interfaces.Token;
  * @since 1.0
  */
 public class WriteGenerator implements GenerateCode {
-  private SymbolTable table = SymbolTable_Impl.getInstance();
+  private SymbolTable table;
+  private GlobalCounter counters;
   private Token srcVar;
+
+  public WriteGenerator() {
+    table = SymbolTable_Impl.getInstance();
+    counters = GlobalCounter_Impl.getInstance();
+  }
 
   @Override
   public void addToken(Token token) {
@@ -35,10 +46,21 @@ public class WriteGenerator implements GenerateCode {
    * escreva ( <identificador> )
    */
   @Override
-  public List<String> generate() {
+  public List<String> generate() throws CodeGeneratorException {
     List<String> result = new ArrayList<>();
-    Integer memoryLocation = table.getVarMemoryLocation(srcVar);
-    result.add(String.format("%s %d", Operations.LDV.name(), memoryLocation));
+    Symbol symbol = table.getSymbol(srcVar);
+    Integer memoryLocation;
+    
+    if (symbol.getScope().equals(Scope.Variable)) {
+      memoryLocation = table.getVarMemoryLocation(srcVar);
+      result.add(String.format("%s %d", Operations.LDV.name(), memoryLocation));
+    } else if (symbol.getScope().equals(Scope.Function)) {
+      memoryLocation = counters.getCount(srcVar.getLexeme());
+      result.add(String.format("%s %s_%d", Operations.CALL.name(), srcVar.getLexeme(), memoryLocation));
+    } else {
+      throw new CodeGeneratorException(String.format("Unexpected Token! Token = %s", srcVar.toString()));
+    }
+
     result.add(Operations.PRN.name());
     return result;
   }

@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -55,13 +54,13 @@ public class ViewerVirtualMachine extends JFrame {
   }
 
   private void initComponents() {
-    try {
-      String icon = "./assets/icon.png"; //  TODO -- Unify Data Resource Strings
-      ImageIcon img = new ImageIcon(this.getClass().getResource(icon));
-      this.setIconImage(img.getImage());
-    } catch (NullPointerException e) {
-      e.printStackTrace();
-    }
+    //    try {
+    //      String icon = "./assets/icon.png"; //  TODO -- Unify Data Resource Strings
+    //      ImageIcon img = new ImageIcon(this.getClass().getResource(icon));
+    //      this.setIconImage(img.getImage());
+    //    } catch (NullPointerException e) {
+    //      e.printStackTrace();
+    //    }
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setTitle("Maquina Virtual");
 

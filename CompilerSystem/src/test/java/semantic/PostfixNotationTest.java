@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import core.generator.CodeGeneratorException;
@@ -176,7 +175,6 @@ public class PostfixNotationTest {
     assertEquals("Should have Equal Result", "1 2 - 3 - ", postfix.toString());
   }
 
-  @Ignore
   @Test
   @SuppressWarnings("deprecation")
   public void expression05Test() throws CodeGeneratorException {
@@ -187,6 +185,15 @@ public class PostfixNotationTest {
     printPostFix(postfix);
     assertEquals("Should have Returned a Boolean Expression", Type.Inteiro, postfix.getType());
     assertEquals("Should have Equal Result", "var1 var2 +", postfix.toString());
+  }
+
+  @Test
+  public void expression06Test() throws CodeGeneratorException {
+    postfix = getNotation(Arrays.asList("-", "(", "-", "5", "div", "2", ")"));
+    printGeneratedCode(postfix.generate());
+    printPostFix(postfix);
+    assertEquals("Should have Returned a Integer Expression", Type.Inteiro, postfix.getType());
+    assertEquals("Should have Equal Result", "5 - 2 div - ", postfix.toString());
   }
 
   /*

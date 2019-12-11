@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import data.interfaces.UserInput;
 
 /**
@@ -49,7 +51,9 @@ public class UserInput_Impl implements UserInput {
     if (this.userInputValues.size() > this.readCounter) {
       result = this.userInputValues.get(this.readCounter++);
     } else {
-      //FIXME Throw Error
+      String value = JOptionPane.showInputDialog(null, "Entre com o Valor da Nova Entrada", "Nova Entrada", JOptionPane.QUESTION_MESSAGE);
+      add(Integer.valueOf(value));
+      result = this.userInputValues.get(this.readCounter++);
     }
     return result;
   }

@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import core.generator.CodeGeneratorException;
@@ -260,6 +261,7 @@ public class GenerateCodeTest {
 
   @SuppressWarnings("deprecation")
   @Test
+  @Ignore
   public void functionTest() throws CodeGeneratorException {
     List<String> blockResult;
 

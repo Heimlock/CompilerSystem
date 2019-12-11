@@ -111,8 +111,8 @@ public class VirtualMachineEngine {
 
   public synchronized void reset() {
     this.memoryStack.reset();
-    this.programStack.setCounter(0);
-    //    this.userInput.reset();
+    this.programStack.reset();
+    this.userInput.reset();
     this.programOutput.reset();
   }
 
@@ -130,22 +130,14 @@ public class VirtualMachineEngine {
 
   public synchronized void stub() {
     try {
-      FileInterpreter file = new FileInterpreter("./assets/testeAssembly.obj");
+      FileInterpreter file = new FileInterpreter("./assets/output/TesteFinal01.obj");
       file.parseOperations();
-      //      setRunning(Boolean.TRUE);
 
-      userInput.add(8);
-      //      for (int i = 0; i < 10; i++) {
-      //        memoryStack.push(i);
-      //        userInput.add(i);
-      //        programOutput.push(i);
-      //      }
+      //      userInput.add(8);
       VirtualMachineEngine.getInstance().updateViewer();
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }

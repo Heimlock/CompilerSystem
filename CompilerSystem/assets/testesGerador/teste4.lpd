@@ -1,0 +1,12 @@
+ { Teste OK }
+programa teste_4;
+var x,a,b:inteiro;
+    y,z: booleano;
+inicio
+ x:=1;
+ a:=2;
+ b:=3;
+ 
+ escreva(y); {escrita de booleano - ok}
+ 
+fim.

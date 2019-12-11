@@ -51,6 +51,7 @@ import core.generator.CodeGeneratorException;
 import core.generator.GeneratorTypes;
 import core.generator.specific.AssignmentGenerator;
 import core.generator.specific.FunctionGenerator;
+import core.generator.specific.FunctionReturnGenerator;
 import core.generator.specific.IfGenerator;
 import core.generator.specific.ProcedureGenerator;
 import core.generator.specific.ReadGenerator;
@@ -59,8 +60,10 @@ import core.generator.specific.WhileGenerator;
 import core.generator.specific.WriteGenerator;
 import core.lexical.parser.LexicalParser;
 import core.lexical.parser.LexicalParserException;
+import data.impl.GlobalCounter_Impl;
 import data.impl.SymbolTable_Impl;
 import data.impl.TokenStack_Impl;
+import data.interfaces.GlobalCounter;
 import data.interfaces.Scope;
 import data.interfaces.SymbolTable;
 import data.interfaces.Token;
@@ -79,6 +82,7 @@ public class SyntaticAnalyzer {
 
   private SymbolTable symbolTable;
   private TokenStack tokenStack;
+  private GlobalCounter counter;
   private LexicalParser parser;
   private Token token;
   private Token bufferToken;
@@ -96,6 +100,7 @@ public class SyntaticAnalyzer {
   private SyntaticAnalyzer(LexicalParser parser) {
     this.tokenStack = TokenStack_Impl.getInstance();
     this.symbolTable = SymbolTable_Impl.getInstance();
+    this.counter = GlobalCounter_Impl.getInstance();
     this.parser = parser;
     this.resultProgram = CodeGenerator.getInstance();
   }
@@ -113,11 +118,11 @@ public class SyntaticAnalyzer {
           resultProgram.addProgramLines(handleBlock());
           this.symbolTable.removeUntil(Scope.Program); //  TODO Remove da Tabela de Simbolos
           if (token.getSymbol() == sPonto) {
-            //  is End Of Program ?
+            //            // is End Of Program ?
             //            if (parser.getRemainingLines() == 0) {
             //              // Success
             //            } else {
-            //              throwError("analyzeProgram", "Not EOF");
+            //              throwError("analyzeProgram", token, "Not EOF");
             //            }
           } else {
             throwError("analyzeProgram", token, "Ponto");
@@ -136,11 +141,26 @@ public class SyntaticAnalyzer {
     List<String> resultSubrotines;
     List<String> resultCommands;
     VariableGenerator varGenerator;
+    String BLOCK_LABEL = String.format("BLOCK_%d", counter.postIncrement("BLOCK"));
+
+    /*
+     * Generate Code
+     */
     nextToken();
     varGenerator = handleEtVariables();
     varGenerator.addToken(symbolTable.getLastDeclaredProcedure().getToken());
     resultSubrotines = handleSubRotines();
     resultCommands = handleCommands();
+
+    /*
+     * Ajust Block Call
+     */
+    resultSubrotines.add(0, String.format("%s %s", Operations.JMP, BLOCK_LABEL));
+    resultSubrotines.add(String.format("%s %s", Operations.NULL, BLOCK_LABEL));
+
+    /*
+     * Sum it Up
+     */
     varGenerator.addBlock(resultSubrotines);
     varGenerator.addBlock(resultCommands);
     return varGenerator.generate();
@@ -230,7 +250,14 @@ public class SyntaticAnalyzer {
           throwError("handleCommands", token, "Ponto e Virgula");
         }
       }
-      nextToken(); //  Consome o sFim
+      if (token.getSymbol() == sFim) {
+        nextToken();
+        //        if (token.getSymbol() == sPonto_Virgula) {
+        //          nextToken();
+        //        }
+      } else {
+        throwError("handleCommands", token, "Fim");
+      }
     } else {
       throwError("handleCommands", token, "Inicio");
     }
@@ -268,18 +295,32 @@ public class SyntaticAnalyzer {
   }
 
   private List<String> handleAssignment() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
+    List<String> result = null;
     List<Token> resultExpression;
     AssignmentGenerator attGenerator = (AssignmentGenerator) GeneratorTypes.Assignment.getGenerator();
+    FunctionReturnGenerator rfGenerator = (FunctionReturnGenerator) GeneratorTypes.FunctionReturn.getGenerator();
     //  Verifica se eh var e se existe
     if (symbolTable.hasSymbol(bufferToken)) {
-      attGenerator.addToken(bufferToken);
-      nextToken();
-      resultExpression = handleExpression();
-      attGenerator.addToken(resultExpression);
+      if (symbolTable.getSymbol(bufferToken).getScope().equals(Scope.Variable)) {
+        attGenerator.addToken(bufferToken);
+        nextToken();
+        resultExpression = handleExpression();
+        attGenerator.addToken(resultExpression);
+        result = attGenerator.generate();
+      } else {
+        //  Adiciona o Id da Funcao
+        rfGenerator.addToken(symbolTable.getSymbol(bufferToken).getToken());
+        //  Handle Expression
+        nextToken();
+        resultExpression = handleExpression();
+        rfGenerator.addToken(resultExpression);
+        //  Generate Code
+        result = rfGenerator.generate();
+      }
     } else {
       throwError("handleAssignment", bufferToken, "Variavel Nao declarada");
     }
-    return attGenerator.generate();
+    return result;
   }
 
   private List<String> handleIf() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
@@ -339,13 +380,13 @@ public class SyntaticAnalyzer {
     return readGenerator.generate();
   }
 
-  private List<String> handleWrite() throws SyntaticAnalyzerException, EOFException, LexicalParserException {
+  private List<String> handleWrite() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
     WriteGenerator writeGenerator = GeneratorTypes.Write.getGenerator();
     nextToken();
     if (token.getSymbol() == sAbre_Parenteses) {
       nextToken();
       if (token.getSymbol() == sIdentificador) {
-        if (symbolTable.hasSymbol(token, Scope.Variable)) {
+        if (symbolTable.hasSymbol(token, Scope.Variable) || symbolTable.hasSymbol(token, Scope.Function)) {
           writeGenerator.addToken(token);
           nextToken();
           if (token.getSymbol() == sFecha_Parenteses) {
@@ -380,11 +421,9 @@ public class SyntaticAnalyzer {
       } else {
         result.addAll(handleDeclareFunction());
       }
-      //      if (token.getSymbol() == sPonto_Virgula) {
-      //        nextToken();
-      //      } else {
-      //        throwError("handleSubRotines", "Ponto Virgula");
-      //      }
+    }
+    if (token.getSymbol() == sPonto_Virgula) {
+      nextToken();
     }
     return result;
   }
@@ -437,6 +476,7 @@ public class SyntaticAnalyzer {
   }
 
   private List<String> handleDeclareFunction() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
+    List<String> result = null;
     FunctionGenerator functionGenerator = GeneratorTypes.Function.getGenerator();
     Token id;
     Token type;
@@ -445,25 +485,31 @@ public class SyntaticAnalyzer {
     if (token.getSymbol() == sIdentificador) {
       id = token;
       nextToken();
-      if (token.getSymbol() == sInteiro || token.getSymbol() == sBooleano) {
-        type = token;
-        // Insere Funcao e Retorno na Tabela de Simbolos
-        this.symbolTable.addSymbol(id, Scope.Variable, Type.getType(type.getLexeme()));
-        functionGenerator.addToken(id);
+      if (token.getSymbol() == sDoisPontos) {
         nextToken();
-        if (token.getSymbol() == sPonto_Virgula) {
-          functionGenerator.addBlock(handleBlock());
+        if (token.getSymbol() == sInteiro || token.getSymbol() == sBooleano) {
+          type = token;
+          // Insere Funcao e Retorno na Tabela de Simbolos
+          this.symbolTable.addSymbol(id, Scope.Function, Type.getType(type.getLexeme()));
+          functionGenerator.addToken(id);
+          nextToken();
+          if (token.getSymbol() == sPonto_Virgula) {
+            functionGenerator.addBlock(handleBlock());
+          } else {
+            throwError("handleDeclareFunction", token, "Ponto Virgula");
+          }
         } else {
           throwError("handleDeclareFunction", token, "Ponto Virgula");
         }
       } else {
-        throwError("handleDeclareFunction", token, "Ponto Virgula");
+        throwError("handleDeclareFunction", token, "Dois Pontos");
       }
     } else {
       throwError("handleDeclareFunction", token, "Identificador");
     }
+    result = functionGenerator.generate();
     this.symbolTable.removeUntil(Scope.Function); //  TODO Remove da Tabela de Simbolos
-    return functionGenerator.generate();
+    return result;
   }
 
   private List<Token> handleExpression() throws SyntaticAnalyzerException, EOFException, LexicalParserException {

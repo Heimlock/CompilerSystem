@@ -1,0 +1,15 @@
+programa teste_2;
+  var x,y: inteiro;
+
+  funcao calcula: inteiro;
+    var total: inteiro;
+  inicio
+    total:= x+y;
+    calcula:= total;
+  fim;
+
+inicio
+  leia(x);
+  leia(y);
+  escreva(calcula);
+fim.

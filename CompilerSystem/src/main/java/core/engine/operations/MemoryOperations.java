@@ -42,7 +42,7 @@ public class MemoryOperations {
   protected static void alloc(int m, int n) {
     int k, value;
     int s;
-    for (k = 0; k < n - 1; k++) {
+    for (k = 0; k <= n - 1; k++) {
       memory.push(0);
       s = memory.getCounter() - 1;
       value = memory.getData(m + k);

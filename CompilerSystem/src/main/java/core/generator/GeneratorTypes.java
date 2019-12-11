@@ -5,6 +5,7 @@ package core.generator;
 
 import core.generator.specific.AssignmentGenerator;
 import core.generator.specific.FunctionGenerator;
+import core.generator.specific.FunctionReturnGenerator;
 import core.generator.specific.IfGenerator;
 import core.generator.specific.LoadGenerator;
 import core.generator.specific.ProcedureGenerator;
@@ -31,13 +32,10 @@ public enum GeneratorTypes {
   Write(WriteGenerator.class), // Ok
   Assignment(AssignmentGenerator.class), //  Ok
   Load(LoadGenerator.class), //  Ok
+  FunctionReturn(FunctionReturnGenerator.class), //
   ;
 
   private Class<GenerateCode> generator;
-
-  private GeneratorTypes() {
-    this.generator = null;
-  }
 
   @SuppressWarnings("unchecked")
   private <T extends GenerateCode> GeneratorTypes(Class<T> generator) {

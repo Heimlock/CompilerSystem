@@ -80,7 +80,7 @@ public class LexicalParser {
   public Token getNextToken() throws EOFException, LexicalParserException {
     Token token = null;
     char charRead;
-    if (this.parsedProgram.size() == 0) {
+    if (this.parsedProgram.size() == 0 && lineOffset == lineArray.length) {
       throw new EOFException("End of Source Program");
     } else {
       charRead = readChar(FALSE);

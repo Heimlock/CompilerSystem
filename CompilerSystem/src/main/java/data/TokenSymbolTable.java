@@ -46,6 +46,8 @@ public enum TokenSymbolTable {
   sDif("!=", 3),
   sMais("+", 4),
   sMenos("-", 4),
+  sMais_Unario("+", 6),
+  sMenos_Unario("-", 6),
   sMult("*", 5),
   sDiv("div", 5),
   sVerdadeiro("verdadeiro"),

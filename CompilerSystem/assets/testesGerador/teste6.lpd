@@ -1,0 +1,14 @@
+{ ERRO - expressao nao booleana }
+programa teste_6;
+var x,a,b,c,z:inteiro;
+           
+inicio
+ x:=1;
+ a:=2;
+ b:=3;
+ c:=7;
+ z:=1;
+ se (x+a*b)          {ERRO - expressao nao booleana}
+ entao escreva(x)
+ senao escreva(a)
+fim.
