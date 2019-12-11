@@ -445,17 +445,21 @@ public class SyntaticAnalyzer {
     ProcedureGenerator procedureGenerator = GeneratorTypes.Procedure.getGenerator();
     nextToken();
     if (token.getSymbol() == sIdentificador) {
-      // Insere na Tabela de Simbolos
-      this.symbolTable.addSymbol(token, Scope.Procedure);
-      procedureGenerator.addToken(token);
-      nextToken();
-      if (token.getSymbol() == sPonto_Virgula) {
-        procedureGenerator.addBlock(handleBlock());
+      if (symbolTable.hasSymbol(token)) {
+        // Insere na Tabela de Simbolos
+        this.symbolTable.addSymbol(token, Scope.Procedure);
+        procedureGenerator.addToken(token);
+        nextToken();
         if (token.getSymbol() == sPonto_Virgula) {
-          nextToken();
+          procedureGenerator.addBlock(handleBlock());
+          if (token.getSymbol() == sPonto_Virgula) {
+            nextToken();
+          }
+        } else {
+          throwError("handleDeclareProcedure", token, "Ponto Virgula");
         }
       } else {
-        throwError("handleDeclareProcedure", token, "Ponto Virgula");
+        throwError("handleDeclareProcedure", token, "Procedimento Duplicado");
       }
     } else {
       throwError("handleDeclareProcedure", token, "Identificador");
@@ -483,26 +487,30 @@ public class SyntaticAnalyzer {
 
     nextToken();
     if (token.getSymbol() == sIdentificador) {
-      id = token;
-      nextToken();
-      if (token.getSymbol() == sDoisPontos) {
+      if (symbolTable.hasSymbol(token)) {
+        id = token;
         nextToken();
-        if (token.getSymbol() == sInteiro || token.getSymbol() == sBooleano) {
-          type = token;
-          // Insere Funcao e Retorno na Tabela de Simbolos
-          this.symbolTable.addSymbol(id, Scope.Function, Type.getType(type.getLexeme()));
-          functionGenerator.addToken(id);
+        if (token.getSymbol() == sDoisPontos) {
           nextToken();
-          if (token.getSymbol() == sPonto_Virgula) {
-            functionGenerator.addBlock(handleBlock());
+          if (token.getSymbol() == sInteiro || token.getSymbol() == sBooleano) {
+            type = token;
+            // Insere Funcao e Retorno na Tabela de Simbolos
+            this.symbolTable.addSymbol(id, Scope.Function, Type.getType(type.getLexeme()));
+            functionGenerator.addToken(id);
+            nextToken();
+            if (token.getSymbol() == sPonto_Virgula) {
+              functionGenerator.addBlock(handleBlock());
+            } else {
+              throwError("handleDeclareFunction", token, "Ponto Virgula");
+            }
           } else {
             throwError("handleDeclareFunction", token, "Ponto Virgula");
           }
         } else {
-          throwError("handleDeclareFunction", token, "Ponto Virgula");
+          throwError("handleDeclareFunction", token, "Dois Pontos");
         }
       } else {
-        throwError("handleDeclareFunction", token, "Dois Pontos");
+        throwError("handleDeclareFunction", token, "Funcao Duplicada");
       }
     } else {
       throwError("handleDeclareFunction", token, "Identificador");

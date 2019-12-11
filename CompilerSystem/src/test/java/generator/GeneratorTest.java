@@ -193,16 +193,13 @@ public class GeneratorTest {
   }
 
   @Test
-  @Ignore
   public void teste11ProgramTest() {
     this.setup(String.format("teste%s", 11));
     try {
       syntatic.analyzeProgram();
       fail("This Program Should Have a Exception.");
     } catch (Exception e) {
-      System.err.println(e.getMessage());
-      e.printStackTrace();
-      assertTrue("Should Throw a Incompatible Type Exception", e.getMessage().endsWith("Context: Procedimento Desconhecido"));
+      assertTrue("Should Throw a Incompatible Type Exception", e.getMessage().endsWith("Context: Procedimento Duplicado"));
     }
   }
 
