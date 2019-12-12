@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import core.generator.CodeGenerator;
@@ -29,8 +28,9 @@ import data.impl.SymbolTable_Impl;
  * @since 1.0
  */
 public class GeneratorTest {
-  private static final String PROGRAMS_BASE_PATH = "./assets/testesGerador/";
-  //  private static final String PROGRAMS_BASE_PATH = "./assets/";
+  //  private static final String PROGRAMS_BASE_PATH = "E:/TestesFinais/Felipe/";
+  //  private static final String PROGRAMS_BASE_PATH = "./assets/testesGerador";
+  private static final String PROGRAMS_BASE_PATH = "./assets/";
   private static SyntaticAnalyzer syntatic;
   private static CodeGenerator generator;
 
@@ -66,9 +66,8 @@ public class GeneratorTest {
   }
 
   @Test
-  @Ignore
   public void genericProgramTest() {
-    this.setup("TesteFinal01");
+    this.setup("TesteFinal04");
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {

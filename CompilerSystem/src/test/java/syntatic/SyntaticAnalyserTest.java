@@ -6,7 +6,6 @@ package syntatic;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.EOFException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +14,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import core.generator.CodeGenerator;
+import core.generator.CodeGeneratorException;
 import core.lexical.file.FileInterpreter;
 import core.lexical.parser.LexicalParser;
 import core.syntactic.analyzer.SyntaticAnalyzer;
@@ -62,8 +62,10 @@ public class SyntaticAnalyserTest {
       System.out.println(String.format("[%d] - %s", i, symbol.toString()));
     }
     System.out.println("****************************************");
-    generator.getGeneratedProgram().forEach(line -> System.out.println(line));
-    generator.saveToFile();
+    if (generator.getGeneratedProgram().size() > 2) {
+      generator.getGeneratedProgram().forEach(line -> System.out.println(line));
+      generator.saveToFile();
+    }
     purgeData();
   }
 
@@ -74,13 +76,17 @@ public class SyntaticAnalyserTest {
   }
 
   /*
-   * Ok
+   * Tipos Incompativeis
+   * Linha 17, Soma de Inteiro com Booleano
    */
   @Test
   public void program01Test() {
     this.setup(String.format("teste%s", 1));
     try {
       syntatic.analyzeProgram();
+      fail("This Program Should have a Exception.");
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 17"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -124,14 +130,14 @@ public class SyntaticAnalyserTest {
 
   @Test
   /*
-   * Ok
+   * Tipos Incompativeis
    */
   public void program04Test() {
     this.setup(String.format("teste%s", 4));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleRead]") && e.getMessage().endsWith(", Context: Pesquisa Declarar Variavel Tabela"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 16"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -179,6 +185,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 7));
     try {
       syntatic.analyzeProgram();
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 18"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -211,6 +219,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 9));
     try {
       syntatic.analyzeProgram();
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 16"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -243,8 +253,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 11));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[callProcedure]") && e.getMessage().endsWith(", Context: Procedimento Desconhecido"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 17"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -260,8 +270,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 12));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleCommands]") && e.getMessage().endsWith(", Context: Inicio"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 17"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -277,8 +287,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 13));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleCommands]") && e.getMessage().endsWith(", Context: Inicio"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 17"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -294,6 +304,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 14));
     try {
       syntatic.analyzeProgram();
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 18"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -309,9 +321,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 15));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      System.err.println(e.getMessage());
-      assertTrue(e.getMessage().startsWith("[handleSubRotines]") && e.getMessage().endsWith(", Context: Ponto Virgula"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 18"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -327,8 +338,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 16));
     try {
       syntatic.analyzeProgram();
-    } catch (EOFException e) {
-      assertTrue(e.getMessage().startsWith("End of Source Program -- Read Char"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 26"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -344,8 +355,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 17));
     try {
       syntatic.analyzeProgram();
-    } catch (SyntaticAnalyzerException e) {
-      assertTrue(e.getMessage().startsWith("[handleFactor]") && e.getMessage().endsWith(", Context: Identificador Desconhecido"));
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 24"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
@@ -361,6 +372,8 @@ public class SyntaticAnalyserTest {
     this.setup(String.format("teste%s", 18));
     try {
       syntatic.analyzeProgram();
+    } catch (CodeGeneratorException e) {
+      assertTrue(e.getMessage().startsWith("Incompatible Type! Last Type Inteiro Operation sIdentificador; Line 17"));
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();

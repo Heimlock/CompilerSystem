@@ -109,21 +109,21 @@ public class PostfixNotationTest {
 
   @Test
   public void notTypeTest() throws CodeGeneratorException {
-    postfix = getNotation(Arrays.asList("nao", "1"));
+    postfix = getNotation(Arrays.asList("nao", "falso"));
     printGeneratedCode(postfix.generate());
     assertEquals("Should have Returned a Boolean Expression", Type.Booleano, postfix.getType());
   }
 
   @Test
   public void andTypeTest() throws CodeGeneratorException {
-    postfix = getNotation(Arrays.asList("1", "e", "1"));
+    postfix = getNotation(Arrays.asList("falso", "e", "falso"));
     printGeneratedCode(postfix.generate());
     assertEquals("Should have Returned a Boolean Expression", Type.Booleano, postfix.getType());
   }
 
   @Test
   public void orTypeTest() throws CodeGeneratorException {
-    postfix = getNotation(Arrays.asList("1", "ou", "0"));
+    postfix = getNotation(Arrays.asList("falso", "ou", "verdadeiro"));
     printGeneratedCode(postfix.generate());
     assertEquals("Should have Returned a Boolean Expression", Type.Booleano, postfix.getType());
   }
@@ -141,11 +141,11 @@ public class PostfixNotationTest {
 
   @Test
   public void expression01Test() throws CodeGeneratorException {
-    postfix = getNotation(Arrays.asList("(", "1", "+", "2", "*", "3", ")", "<=", "4", "e", "5"));
+    postfix = getNotation(Arrays.asList("(", "1", "+", "2", "*", "3", ")", "<=", "4", "*", "5"));
     printGeneratedCode(postfix.generate());
     printPostFix(postfix);
     assertEquals("Should have Returned a Boolean Expression", Type.Booleano, postfix.getType());
-    assertEquals("Should have Equal Result", "1 2 3 * + 4 <= 5 e ", postfix.toString());
+    assertEquals("Should have Equal Result", "1 2 3 * + 4 5 * <= ", postfix.toString());
   }
 
   @Test
@@ -163,7 +163,7 @@ public class PostfixNotationTest {
     printGeneratedCode(postfix.generate());
     printPostFix(postfix);
     assertEquals("Should have Returned a Integer Expression", Type.Inteiro, postfix.getType());
-    assertEquals("Should have Equal Result", "-1 -2 3 * + ", postfix.toString());
+    assertEquals("Should have Equal Result", "1 - 2 - 3 * + ", postfix.toString());
   }
 
   @Test
@@ -179,12 +179,12 @@ public class PostfixNotationTest {
   @SuppressWarnings("deprecation")
   public void expression05Test() throws CodeGeneratorException {
     table.addSymbol(new Token_Impl("var1"), Scope.Variable, Type.Inteiro);
-    table.addSymbol(new Token_Impl("var2"), Scope.Variable, Type.Booleano);
+    table.addSymbol(new Token_Impl("var2"), Scope.Variable, Type.Inteiro);
     postfix = getNotation(Arrays.asList("var1", "+", "var2"));
     printGeneratedCode(postfix.generate());
     printPostFix(postfix);
     assertEquals("Should have Returned a Boolean Expression", Type.Inteiro, postfix.getType());
-    assertEquals("Should have Equal Result", "var1 var2 +", postfix.toString());
+    assertEquals("Should have Equal Result", "var1 var2 + ", postfix.toString());
   }
 
   @Test

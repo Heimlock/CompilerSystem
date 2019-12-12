@@ -135,7 +135,7 @@ public class GenerateCodeTest {
     generator.addBlock(ifBlockResult);
     assertAssembly(generator, Arrays.asList(//
         "LDC 3", "LDC 4", "CEQ",  //  PostFix 
-        "NEG", "JMPF Else_Start_0", //  If Decision
+        "JMPF Else_Start_0", //  If Decision
         "LDC 1", "LDC 2", "ADD", "STR 0", // If Block
         "NULL Else_Start_0" // Else Start
         ));
@@ -159,7 +159,7 @@ public class GenerateCodeTest {
 
     //  else Block
     generator = Assignment.getGenerator();
-    buildContext(generator, Arrays.asList("var2", ":=", "3", "e", "4"));
+    buildContext(generator, Arrays.asList("var2", ":=", "falso", "e", "falso"));
     elseBlockResult = generator.generate();
 
     //  If and Else
@@ -169,11 +169,11 @@ public class GenerateCodeTest {
     generator.addBlock(elseBlockResult);
     assertAssembly(generator, Arrays.asList(//
         "LDC 5", "LDC 6", "CEQ", //  PostFix 
-        "NEG", "JMPF Else_Start_0", //  If Decision
+        "JMPF Else_Start_0", //  If Decision
         "LDC 1", "LDC 2", "ADD", "STR 0", // If Block
         "JMP Else_End_0", // If Block, Jump to the End
         "NULL Else_Start_0", // Else Start
-        "LDC 3", "LDC 4", "AND", "STR 1", // Else Block
+        "LDC 0", "LDC 0", "AND", "STR 1", // Else Block
         "NULL Else_End_0" // Else Start
     ));
   }

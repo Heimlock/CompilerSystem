@@ -9,8 +9,10 @@ import java.util.Optional;
 
 import core.engine.operations.Operations;
 import data.impl.GlobalCounter_Impl;
+import data.impl.SymbolTable_Impl;
 import data.interfaces.GenerateCode;
 import data.interfaces.GlobalCounter;
+import data.interfaces.SymbolTable;
 import data.interfaces.Token;
 
 /**
@@ -23,7 +25,7 @@ import data.interfaces.Token;
 public class FunctionGenerator implements GenerateCode {
   private Token identifier;
   private List<Token> vars;
-  //  private SymbolTable table;
+  private SymbolTable table;
   private GlobalCounter counters;
   private List<List<String>> generatedBlocks;
 
@@ -33,7 +35,7 @@ public class FunctionGenerator implements GenerateCode {
   public FunctionGenerator() {
     vars = new ArrayList<>();
     generatedBlocks = new ArrayList<>();
-    //    table = SymbolTable_Impl.getInstance();
+    table = SymbolTable_Impl.getInstance();
     counters = GlobalCounter_Impl.getInstance();
   }
 
@@ -49,7 +51,8 @@ public class FunctionGenerator implements GenerateCode {
   @Override
   public List<String> generate() {
     List<String> result = new ArrayList<>();
-    Integer funcNumber = counters.postIncrement(identifier.getLexeme());
+    //    Integer funcNumber = counters.postIncrement(identifier.getLexeme());
+    Integer funcNumber = table.getProcMemoryLocation(identifier);
     //    List<Symbol> variables = table.getAllVariablesOf(identifier);
     //    Integer memoryLocation = table.getVarMemoryLocation(variables.get(0));
 

@@ -21,7 +21,7 @@ public interface SymbolTable {
 
   public void addType(Token token);
 
-  public Boolean duplicatedVariable(Token token);
+  public Boolean duplicatedVariable(Token varToken, Token parentToken);
 
   public Boolean hasSymbol(Token token);
 
@@ -37,7 +37,7 @@ public interface SymbolTable {
 
   public Integer getProcMemoryLocation(Symbol symbol);
 
-  public Symbol getLastDeclaredProcedure();
+  //  public Symbol getLastDeclaredProcedure();
 
   public List<Symbol> getAllVariablesOf(Token token);
 

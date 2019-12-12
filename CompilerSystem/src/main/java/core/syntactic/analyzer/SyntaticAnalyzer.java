@@ -86,6 +86,7 @@ public class SyntaticAnalyzer {
   private LexicalParser parser;
   private Token token;
   private Token bufferToken;
+  private Token lastProcedure;
 
   //  Code Generator
   private CodeGenerator resultProgram;
@@ -113,6 +114,7 @@ public class SyntaticAnalyzer {
       if (token.getSymbol() == sIdentificador) {
         this.symbolTable.addSymbol(token, Scope.Program);
         resultProgram.addProgramLine(String.format("NULL %s", token.getLexeme()));
+        lastProcedure = token; // Program Name
         nextToken();
         if (token.getSymbol() == sPonto_Virgula) {
           resultProgram.addProgramLines(handleBlock());
@@ -142,13 +144,14 @@ public class SyntaticAnalyzer {
     List<String> resultCommands;
     VariableGenerator varGenerator;
     String BLOCK_LABEL = String.format("BLOCK_%d", counter.postIncrement("BLOCK"));
+    Token localProcedure = lastProcedure; // Last Procedure
 
     /*
      * Generate Code
      */
     nextToken();
     varGenerator = handleEtVariables();
-    varGenerator.addToken(symbolTable.getLastDeclaredProcedure().getToken());
+    varGenerator.addToken(localProcedure);
     resultSubrotines = handleSubRotines();
     resultCommands = handleCommands();
 
@@ -194,7 +197,7 @@ public class SyntaticAnalyzer {
     do {
       if (token.getSymbol() == sIdentificador) {
         //  Pesquisa duplicar Tabela
-        if (!this.symbolTable.duplicatedVariable(token)) {
+        if (!this.symbolTable.duplicatedVariable(token, lastProcedure)) {
           varTokens.add(token);
           this.symbolTable.addSymbol(token, Scope.Variable);
           nextToken();
@@ -445,10 +448,11 @@ public class SyntaticAnalyzer {
     ProcedureGenerator procedureGenerator = GeneratorTypes.Procedure.getGenerator();
     nextToken();
     if (token.getSymbol() == sIdentificador) {
-      if (symbolTable.hasSymbol(token)) {
+      if (!symbolTable.hasSymbol(token)) {
         // Insere na Tabela de Simbolos
         this.symbolTable.addSymbol(token, Scope.Procedure);
         procedureGenerator.addToken(token);
+        lastProcedure = token; // Procedure Name
         nextToken();
         if (token.getSymbol() == sPonto_Virgula) {
           procedureGenerator.addBlock(handleBlock());
@@ -487,7 +491,7 @@ public class SyntaticAnalyzer {
 
     nextToken();
     if (token.getSymbol() == sIdentificador) {
-      if (symbolTable.hasSymbol(token)) {
+      if (!symbolTable.hasSymbol(token)) {
         id = token;
         nextToken();
         if (token.getSymbol() == sDoisPontos) {
@@ -496,6 +500,7 @@ public class SyntaticAnalyzer {
             type = token;
             // Insere Funcao e Retorno na Tabela de Simbolos
             this.symbolTable.addSymbol(id, Scope.Function, Type.getType(type.getLexeme()));
+            lastProcedure = id; // Function Name
             functionGenerator.addToken(id);
             nextToken();
             if (token.getSymbol() == sPonto_Virgula) {
@@ -566,6 +571,7 @@ public class SyntaticAnalyzer {
       if (this.symbolTable.hasSymbol(token)) {
         if (this.symbolTable.getSymbol(token).getScope() == Scope.Function) {
           tokenList.add(handleFunctionCall());
+          nextToken();
         } else {
           tokenList.add(token);
           nextToken();

@@ -42,6 +42,7 @@ import core.generator.GeneratorTypes;
 import core.generator.specific.LoadGenerator;
 import data.TokenSymbolTable;
 import data.interfaces.PostfixNotation;
+import data.interfaces.Scope;
 import data.interfaces.SymbolTable;
 import data.interfaces.Token;
 import data.interfaces.Type;
@@ -132,9 +133,14 @@ public class PostfixNotation_Impl implements PostfixNotation {
         } else {
           this.resultType = symbolTable.getSymbol(token).getType().get();
         }
-        load.addToken(token);
-        result.addAll(load.generate());
-        load.clear();
+        if (symbolTable.getSymbol(token).getScope().equals(Scope.Function)) {
+          Integer memoryLocation = symbolTable.getProcMemoryLocation(token);
+          result.add(String.format("%s %s_%d", Operations.CALL.name(), token.getLexeme(), memoryLocation));
+        } else {
+          load.addToken(token);
+          result.addAll(load.generate());
+          load.clear();
+        }
         this.resultType = symbolTable.getSymbol(token).getType().get();
         break;
       case sFuncao:
@@ -310,7 +316,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
   }
 
   private void handleToken(Token token) throws CodeGeneratorException {
-    if (token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador)) {
+    if (token.getSymbol().equals(sNumero) || token.getSymbol().equals(sIdentificador) || token.getSymbol().equals(sVerdadeiro) || token.getSymbol().equals(sFalso)) {
       resultList.add(token);
     } else {
       if (token.getSymbol().equals(sFecha_Parenteses)) {
@@ -361,7 +367,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
   }
 
   private Boolean isTokenOperation(Token token) {
-    List<TokenSymbolTable> operationSymbol = Arrays.asList(sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif);
+    List<TokenSymbolTable> operationSymbol = Arrays.asList(sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif, sAbre_Parenteses);
     return operationSymbol.contains(token.getSymbol());
   }
 
