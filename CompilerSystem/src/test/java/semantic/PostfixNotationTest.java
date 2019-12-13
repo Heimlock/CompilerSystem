@@ -196,6 +196,20 @@ public class PostfixNotationTest {
     assertEquals("Should have Equal Result", "5 - 2 div - ", postfix.toString());
   }
 
+  @Test
+  public void expression07Test() throws CodeGeneratorException {
+    table.addSymbol(new Token_Impl("a"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("b"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("c"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("d"), Scope.Variable, Type.Inteiro);
+    table.addSymbol(new Token_Impl("flin"), Scope.Variable, Type.Inteiro);
+    postfix = getNotation(Arrays.asList("+", "(", "flin", "+", "(", "-", "1", ")", ")"));
+    printGeneratedCode(postfix.generate());
+    printPostFix(postfix);
+    assertEquals("Should have Returned a Integer Expression", Type.Inteiro, postfix.getType());
+    assertEquals("Should have Equal Result", "flin 1 - + + ", postfix.toString());
+  }
+
   /*
    * Auxiliary Functions
    */

@@ -55,7 +55,7 @@ public class WriteGenerator implements GenerateCode {
       memoryLocation = table.getVarMemoryLocation(srcVar);
       result.add(String.format("%s %d", Operations.LDV.name(), memoryLocation));
     } else if (symbol.getScope().equals(Scope.Function)) {
-      memoryLocation = counters.getCount(srcVar.getLexeme());
+      memoryLocation = table.getProcMemoryLocation(srcVar);
       result.add(String.format("%s %s_%d", Operations.CALL.name(), srcVar.getLexeme(), memoryLocation));
     } else {
       throw new CodeGeneratorException(String.format("Unexpected Token! Token = %s", srcVar.toString()));

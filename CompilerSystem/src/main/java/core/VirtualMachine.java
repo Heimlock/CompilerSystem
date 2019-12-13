@@ -22,7 +22,7 @@ public class VirtualMachine {
     //  Virtual Machine Setup
     vmEngine.setViewerInstance(viewerInstance);
     vmEngine.updateViewer();
-    vmEngine.stub();
+    //    vmEngine.stub();
 
     //  Main Loop
     Thread mainThread = ThreadManager.createThread("Main Loop", () -> {

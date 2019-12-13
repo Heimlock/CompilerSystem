@@ -13,7 +13,8 @@ import java.util.List;
  * @since 1.0
  */
 public interface SymbolTable {
-  public void removeUntil(Scope scope);
+  //  public void removeUntil(Scope scope);
+  public void removeUntil(Token id);
 
   public void addSymbol(Token token, Scope scope);
 

@@ -38,9 +38,18 @@ public class SymbolTable_Impl implements SymbolTable {
     this.symbolStack = new Stack<>();
   }
 
+  //  @Override
+  //  public void removeUntil(Scope scope) {
+  //    List<Symbol> list = symbolStack.stream().filter(s -> s.getScope().equals(scope)).collect(Collectors.toList());
+  //    Symbol lastOfScope = list.get(list.size() - 1);
+  //    while (symbolStack.lastElement() != lastOfScope) {
+  //      symbolStack.pop();
+  //    }
+  //  }
+
   @Override
-  public void removeUntil(Scope scope) {
-    List<Symbol> list = symbolStack.stream().filter(s -> s.getScope().equals(scope)).collect(Collectors.toList());
+  public void removeUntil(Token id) {
+    List<Symbol> list = symbolStack.stream().filter(t -> t.getLexeme().equals(id.getLexeme())).collect(Collectors.toList());
     Symbol lastOfScope = list.get(list.size() - 1);
     while (symbolStack.lastElement() != lastOfScope) {
       symbolStack.pop();

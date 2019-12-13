@@ -83,11 +83,11 @@ public class PostfixNotation_Impl implements PostfixNotation {
       //  Trata comeco de Expressao
       if (tokenStack.size() == 1 && isValue && lastValueIsUnaryCapable) {
         auxToken = tokenStack.pop();
-        auxToken.setSymbol(token.getSymbol().equals(sMais) ? sMais_Unario : sMenos_Unario);
+        auxToken.setSymbol(auxToken.getSymbol().equals(sMais) ? sMais_Unario : sMenos_Unario);
         tokenStack.add(auxToken);
       } else if (tokenStack.size() >= 2 && lastValueIsUnaryCapable && isTokenOperation(tokenStack.get(tokenStack.size() - 2))) {
         auxToken = tokenStack.pop();
-        auxToken.setSymbol(token.getSymbol().equals(sMais) ? sMais_Unario : sMenos_Unario);
+        auxToken.setSymbol(auxToken.getSymbol().equals(sMais) ? sMais_Unario : sMenos_Unario);
         tokenStack.add(auxToken);
       }
     }
@@ -367,7 +367,7 @@ public class PostfixNotation_Impl implements PostfixNotation {
   }
 
   private Boolean isTokenOperation(Token token) {
-    List<TokenSymbolTable> operationSymbol = Arrays.asList(sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif, sAbre_Parenteses);
+    List<TokenSymbolTable> operationSymbol = Arrays.asList(sMais, sMenos, sNao, sMult, sDiv, sMaior, sMaiorIg, sMenor, sMenorIg, sE, sOu, sIg, sDif, sAbre_Parenteses, sFecha_Parenteses);
     return operationSymbol.contains(token.getSymbol());
   }
 

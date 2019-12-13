@@ -28,9 +28,9 @@ import data.impl.SymbolTable_Impl;
  * @since 1.0
  */
 public class GeneratorTest {
-  //  private static final String PROGRAMS_BASE_PATH = "E:/TestesFinais/Felipe/";
+  private static final String PROGRAMS_BASE_PATH = "F:/TestesFinais/Felipe";
   //  private static final String PROGRAMS_BASE_PATH = "./assets/testesGerador";
-  private static final String PROGRAMS_BASE_PATH = "./assets/";
+  //  private static final String PROGRAMS_BASE_PATH = "./assets/";
   private static SyntaticAnalyzer syntatic;
   private static CodeGenerator generator;
 
@@ -39,7 +39,7 @@ public class GeneratorTest {
     try {
       generator = CodeGenerator.getInstance();
       generator.clear();
-      FileInterpreter interpreter = new FileInterpreter(String.format("%s/%s.lpd", PROGRAMS_BASE_PATH, filename));
+      FileInterpreter interpreter = new FileInterpreter(String.format("%s/%s.txt", PROGRAMS_BASE_PATH, filename));
       generator.setFilename(filename);
       List<String> parsedProgram = interpreter.parseProgram();
       LexicalParser parser = LexicalParser.getInstance();
@@ -67,7 +67,7 @@ public class GeneratorTest {
 
   @Test
   public void genericProgramTest() {
-    this.setup("TesteFinal04");
+    this.setup("teste1");
     try {
       syntatic.analyzeProgram();
     } catch (Exception e) {

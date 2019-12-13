@@ -107,6 +107,7 @@ public class SyntaticAnalyzer {
   }
 
   public void analyzeProgram() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
+    Token programId;
     nextToken();
     if (token.getSymbol() == sPrograma) {
       resultProgram.addProgramLine(String.format("%s", Operations.START.name()));
@@ -114,11 +115,12 @@ public class SyntaticAnalyzer {
       if (token.getSymbol() == sIdentificador) {
         this.symbolTable.addSymbol(token, Scope.Program);
         resultProgram.addProgramLine(String.format("NULL %s", token.getLexeme()));
+        programId = token;
         lastProcedure = token; // Program Name
         nextToken();
         if (token.getSymbol() == sPonto_Virgula) {
           resultProgram.addProgramLines(handleBlock());
-          this.symbolTable.removeUntil(Scope.Program); //  TODO Remove da Tabela de Simbolos
+          this.symbolTable.removeUntil(programId); //  TODO Remove da Tabela de Simbolos
           if (token.getSymbol() == sPonto) {
             //            // is End Of Program ?
             //            if (parser.getRemainingLines() == 0) {
@@ -446,11 +448,13 @@ public class SyntaticAnalyzer {
 
   private List<String> handleDeclareProcedure() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
     ProcedureGenerator procedureGenerator = GeneratorTypes.Procedure.getGenerator();
+    Token id = null;
     nextToken();
     if (token.getSymbol() == sIdentificador) {
       if (!symbolTable.hasSymbol(token)) {
         // Insere na Tabela de Simbolos
         this.symbolTable.addSymbol(token, Scope.Procedure);
+        id = token;
         procedureGenerator.addToken(token);
         lastProcedure = token; // Procedure Name
         nextToken();
@@ -465,10 +469,10 @@ public class SyntaticAnalyzer {
       } else {
         throwError("handleDeclareProcedure", token, "Procedimento Duplicado");
       }
+      this.symbolTable.removeUntil(id);
     } else {
       throwError("handleDeclareProcedure", token, "Identificador");
     }
-    this.symbolTable.removeUntil(Scope.Procedure); //  TODO Remove da Tabela de Simbolos
     return procedureGenerator.generate();
   }
 
@@ -486,7 +490,7 @@ public class SyntaticAnalyzer {
   private List<String> handleDeclareFunction() throws SyntaticAnalyzerException, EOFException, LexicalParserException, CodeGeneratorException {
     List<String> result = null;
     FunctionGenerator functionGenerator = GeneratorTypes.Function.getGenerator();
-    Token id;
+    Token id = null;
     Token type;
 
     nextToken();
@@ -521,7 +525,7 @@ public class SyntaticAnalyzer {
       throwError("handleDeclareFunction", token, "Identificador");
     }
     result = functionGenerator.generate();
-    this.symbolTable.removeUntil(Scope.Function); //  TODO Remove da Tabela de Simbolos
+    this.symbolTable.removeUntil(id); //  TODO Remove da Tabela de Simbolos
     return result;
   }
 

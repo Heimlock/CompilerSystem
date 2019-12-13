@@ -43,7 +43,7 @@ public class MemoryStack_Impl implements MemoryStack {
     try {
       this.stack.set(index, value);
     } catch (IndexOutOfBoundsException e) {
-      push(value);
+      e.printStackTrace();
     }
   }
 

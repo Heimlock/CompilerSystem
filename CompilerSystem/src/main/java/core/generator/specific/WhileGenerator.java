@@ -58,7 +58,7 @@ public class WhileGenerator implements GenerateCode {
     //  Add Expression
     result.addAll(postFixResult);
     //  Negate Result
-    result.add(String.format("%s", Operations.NEG.name()));
+    //    result.add(String.format("%s", Operations.NEG.name()));
     //  Jump Else
     result.add(String.format(String.format("%s %s", Operations.JMPF.name(), WHILE_END), whileCount));
     //  Add Block
